@@ -1,3 +1,28 @@
 {
-  "typescript.preferences.autoImportFileExcludePatterns": ["@ionic/angular/common", "@ionic/angular"]
+"typescript.preferences.autoImportFileExcludePatterns": [
+     "@ionic/angular/common",
+     "@ionic/angular"
+],
+"cSpell.words": [
+     "aleatório",
+     "Autenticacao",
+     "Autenticado",
+     "autenticar",
+     "buscar",
+     "Cadastrar",
+     "encerrar",
+     "excluir",
+     "exibir",
+     "inválidos",
+     "listar",
+     "Mensagem",
+     "posicao",
+     "salvar",
+     "senha",
+     "texto",
+     "usuario",
+     "Usuario",
+     "usuarios",
+     "verificar"
+]
 }

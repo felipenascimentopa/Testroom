@@ -1,0 +1,23 @@
+<ion-header [translucent]="true">
+     <ion-toolbar color="dark">
+          <ion-title>Tarefas</ion-title>
+     </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+     <form [formGroup]="formGroup" (ngSubmit)="autenticar()">
+          <ion-item>
+               <ion-label position="stacked">Login</ion-label>
+               <ion-input type="text" formControlName="login"></ion-input>
+          </ion-item>
+
+          <ion-item>
+               <ion-label position="stacked">Senha</ion-label>
+               <ion-input type="password" formControlName="senha"></ion-input>
+          </ion-item>
+          
+          <ion-button type="submit" expand="block" color="primary" [disabled]="!formGroup.valid">Entrar</ion-button>
+          <ion-button type="button" expand="block" color="danger" (click)="irCadastrar()">Cadastrar</ion-button>
+     </form>
+
+</ion-content>

@@ -1,0 +1,19 @@
+<ion-header [translucent]="true">
+     <ion-toolbar color="dark">
+          <ion-buttons slot="start">
+               <ion-menu-button></ion-menu-button>
+          </ion-buttons>
+          <ion-title>Menu</ion-title>
+     </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+     <ion-list>
+          @for (item of menu; track item) {
+          <ion-item [routerLink]="item.rota" detail>
+               <ion-icon slot="start" [md]="item.icone" [color]="item.cor"></ion-icon>
+               <ion-label>{{ item.descricao }}</ion-label>
+          </ion-item>
+          }
+     </ion-list>
+</ion-content>
