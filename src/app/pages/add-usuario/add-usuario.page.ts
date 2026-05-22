@@ -35,7 +35,7 @@ export class AddUsuarioPage implements OnInit {
 
      salvar() {
           this.usuario.nome = this.formGroup.value.nome;
-          this.usuario.email = this.formGroup.value.login;
+          this.usuario.email = this.formGroup.value.email;
           this.usuario.senha = this.formGroup.value.senha;
           this.usuarioService.salvar(this.usuario);
           this.exibirMensagem('Registro salvo com sucesso!!!');

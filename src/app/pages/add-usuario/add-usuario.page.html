@@ -9,19 +9,24 @@
 
 <ion-content [fullscreen]="true" class="ion-padding">
      <form [formGroup]="formGroup" (ngSubmit)="salvar()">
+
           <ion-item>
                <ion-label position="stacked">Nome</ion-label>
                <ion-input type="text" formControlName="nome"></ion-input>
           </ion-item>
+
           <ion-item>
-               <ion-label position="stacked">Login</ion-label>
-               <ion-input type="text" formControlName="login" (ionBlur)="verificarLogin()"></ion-input>
+               <ion-label position="stacked">Email</ion-label>
+               <ion-input type="text" formControlName="email" (ionBlur)="verificarLogin()"></ion-input>
           </ion-item>
+
           <ion-item>
                <ion-label position="stacked">Senha</ion-label>
                <ion-input type="password" formControlName="senha"></ion-input>
           </ion-item>
-          <ion-button type="submit" expand="block" color="primary"
-               [disabled]="!formGroup.valid || loginExistente">Salvar</ion-button>
+
+          <ion-button type="submit" expand="block" color="primary" [disabled]="!formGroup.valid || loginExistente">
+               Salvar
+          </ion-button>
      </form>
 </ion-content>
