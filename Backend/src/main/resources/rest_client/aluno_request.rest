@@ -1,0 +1,33 @@
+GET http://localhost:8080/api/v1/alunos HTTP/1.1
+
+###
+
+GET http://localhost:8080/api/v1/alunos/1 HTTP/1.1
+
+###
+
+POST http://localhost:8080/api/v1/alunos HTTP/1.1
+content-type: application/json
+
+{
+    "nome": "Arthur",
+    "email": "arthurzin@gmail.com",
+    "senha": "12345678"
+}
+
+###
+
+DELETE http://localhost:8080/api/v1/alunos/1 HTTP/1.1
+
+###
+
+
+PUT http://localhost:8080/api/v1/alunos HTTP/1.1
+content-type: application/json
+
+{
+    "id": "2",
+    "nome": "Eduardin",
+    "email": "cuidado@gmail.com",
+    "senha": "12345678"
+}
