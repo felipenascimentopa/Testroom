@@ -1,19 +1,53 @@
-<ion-header [translucent]="true">
-     <ion-toolbar color="dark">
-          <ion-buttons slot="start">
-               <ion-menu-button></ion-menu-button>
-          </ion-buttons>
-          <ion-title>Menu</ion-title>
-     </ion-toolbar>
-</ion-header>
+<ion-menu contentId="main-content">
+    <ion-header>
+        <ion-toolbar color="dark">
+            <ion-title>Menu</ion-title>
+        </ion-toolbar>
+    </ion-header>
 
-<ion-content [fullscreen]="true" class="ion-padding">
-     <ion-list>
-          @for (item of menu; track item) {
-          <ion-item [routerLink]="item.rota" detail>
-               <ion-icon slot="start" [md]="item.icone" [color]="item.cor"></ion-icon>
-               <ion-label>{{ item.descricao }}</ion-label>
-          </ion-item>
-          }
-     </ion-list>
-</ion-content>
+    <ion-content class="ion-padding">
+        <div class="user-info">
+            <ion-icon name="person-outline" class="user-icon"></ion-icon>
+            <h3>{{ usuarioNome }}</h3>
+            <p>{{ tipoUsuario === 'ALUNO' ? 'Aluno' : 'Professor' }}</p>
+        </div>
+
+        <ion-list>
+            @if (isProfessor()) {
+                <ion-item routerLink="/minhas-turmas" detail="true">
+                    <ion-icon name="school-outline" slot="start"></ion-icon>
+                    <ion-label>Minhas Turmas</ion-label>
+                </ion-item>
+
+                <ion-item routerLink="/criar-turma" detail="true">
+                    <ion-icon name="people-outline" slot="start"></ion-icon>
+                    <ion-label>Criar Turma</ion-label>
+                </ion-item>
+
+                <ion-item routerLink="/alunos" detail="true">
+                    <ion-icon name="people-outline" slot="start"></ion-icon>
+                    <ion-label>Alunos</ion-label>
+                </ion-item>
+            }
+
+            @if (isAluno()) {
+                <ion-item routerLink="/minhas-turmas" detail="true">
+                    <ion-icon name="school-outline" slot="start"></ion-icon>
+                    <ion-label>Minhas Turmas</ion-label>
+                </ion-item>
+
+                <ion-item routerLink="/entrar-turma" detail="true">
+                    <ion-icon name="clipboard-outline" slot="start"></ion-icon>
+                    <ion-label>Entrar em Turma</ion-label>
+                </ion-item>
+            }
+
+            <ion-item (click)="logout()" detail="false">
+                <ion-icon name="log-out-outline" slot="start"></ion-icon>
+                <ion-label>Sair</ion-label>
+            </ion-item>
+        </ion-list>
+    </ion-content>
+</ion-menu>
+
+<ion-router-outlet id="main-content"></ion-router-outlet>

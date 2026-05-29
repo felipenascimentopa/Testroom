@@ -1,29 +1,60 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonButtons, IonLabel, IonIcon, IonList, IonMenuButton } from '@ionic/angular/standalone';
 import { RouterModule } from '@angular/router';
+import { 
+    IonContent, IonHeader, IonToolbar, IonTitle, 
+    IonMenu, IonMenuButton, IonButtons, IonList, IonItem, IonIcon, IonLabel,
+    IonButton, IonAlert
+} from '@ionic/angular/standalone';
+import { NavController } from '@ionic/angular';
+import { AuthService } from '../../services/auth.service';
+
 import { addIcons } from 'ionicons';
-import { arrowForwardCircle, exit, grid, list, person } from 'ionicons/icons';
+import { 
+    peopleOutline, schoolOutline, documentTextOutline, 
+    logOutOutline, personOutline, clipboardOutline
+} from 'ionicons/icons';
 
 @Component({
-     selector: 'app-menu',
-     templateUrl: './menu.page.html',
-     styleUrls: ['./menu.page.scss'],
-     standalone: true,
-     imports: [IonList, IonIcon, IonLabel, IonButtons, IonItem, IonContent, IonHeader, IonTitle, IonToolbar, IonMenuButton, RouterModule, CommonModule, FormsModule]
+    selector: 'app-menu',
+    templateUrl: './menu.page.html',
+    styleUrls: ['./menu.page.scss'],
+    standalone: true,
+    imports: [
+        IonContent, IonHeader, IonToolbar, IonTitle, IonMenu, IonMenuButton,
+        IonButtons, IonList, IonItem, IonIcon, IonLabel, IonButton, IonAlert,
+        CommonModule, RouterModule
+    ]
 })
-export class MenuPage implements OnInit {
+export class MenuPage {
+    usuarioNome: string = '';
+    tipoUsuario: string = '';
 
-     constructor() {
-          addIcons({ grid, list, arrowForwardCircle, person, exit });
-     }
+    constructor(
+        private authService: AuthService,
+        private navController: NavController
+    ) {
+        addIcons({ peopleOutline, schoolOutline, documentTextOutline, logOutOutline, personOutline, clipboardOutline });
+    }
 
-     menu = [
-          { descricao: "Sair", rota: "/login", icone: "exit", cor: "danger" }
-     ];
+    ionViewWillEnter() {
+        const usuario = this.authService.obterUsuarioSessao();
+        if (usuario) {
+            this.usuarioNome = usuario.nome;
+            this.tipoUsuario = usuario.tipoUsuario;
+        }
+    }
 
-     ngOnInit() {
-     }
+    isProfessor(): boolean {
+        return this.authService.isProfessor();
+    }
 
+    isAluno(): boolean {
+        return this.authService.isAluno();
+    }
+
+    logout() {
+        this.authService.limparSessao();
+        this.navController.navigateRoot('/login');
+    }
 }
