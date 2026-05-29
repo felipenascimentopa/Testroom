@@ -1,0 +1,45 @@
+<ion-header [translucent]="true">
+    <ion-toolbar color="dark">
+        <ion-buttons slot="start">
+            <ion-menu-button></ion-menu-button>
+        </ion-buttons>
+        <ion-title>Minhas Turmas</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+    @if (loading) {
+        <div class="ion-text-center ion-padding">
+            <p>Carregando...</p>
+        </div>
+    } @else {
+        @for (turma of turmas; track turma.id) {
+            <ion-card (click)="verTurma(turma.id)">
+                <ion-card-header>
+                    <ion-card-title>{{ turma.nome }}</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <p>{{ turma.descricao }}</p>
+                    <div class="info-row">
+                        <ion-chip>
+                            <ion-icon name="book-outline"></ion-icon>
+                            <ion-label>Código: {{ turma.codigoAcesso }}</ion-label>
+                        </ion-chip>
+                    </div>
+                </ion-card-content>
+            </ion-card>
+        } @empty {
+            <div class="ion-text-center ion-padding">
+                <p>Você não está matriculado em nenhuma turma.</p>
+            </div>
+        }
+    }
+
+    @if (isProfessor()) {
+        <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+            <ion-fab-button routerLink="/criar-turma" color="danger">
+                <ion-icon name="add"></ion-icon>
+            </ion-fab-button>
+        </ion-fab>
+    }
+</ion-content>
