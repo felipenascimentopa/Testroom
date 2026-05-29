@@ -50,7 +50,7 @@ export class MinhasTurmasPage {
         this.loading = true;
         const usuario = this.authService.obterUsuarioSessao();
 
-        if (this.authService.isProfessor() && usuario) {
+        if (this.isProfessor() && usuario) {
             this.turmaService.buscarPorProfessor(usuario.id).subscribe({
                 next: (res) => {
                     this.turmas = res;
@@ -61,7 +61,7 @@ export class MinhasTurmasPage {
                     this.loading = false;
                 }
             });
-        } else if (this.authService.isAluno() && usuario) {
+        } else if (this.isAluno() && usuario) {
             this.matriculaService.buscarPorAluno(usuario.id).subscribe({
                 next: (matriculas) => {
                     const turmasIds = matriculas.map(m => m.idTurma);
@@ -86,7 +86,17 @@ export class MinhasTurmasPage {
                     this.loading = false;
                 }
             });
+        } else {
+            this.loading = false;
         }
+    }
+
+    isProfessor(): boolean {
+        return this.authService.isProfessor();
+    }
+
+    isAluno(): boolean {
+        return this.authService.isAluno();
     }
 
     verTurma(turmaId: number) {

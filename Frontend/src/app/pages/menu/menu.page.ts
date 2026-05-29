@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router';
 import { 
     IonContent, IonHeader, IonToolbar, IonTitle, 
     IonMenu, IonMenuButton, IonButtons, IonList, IonItem, IonIcon, IonLabel,
-    IonButton, IonAlert
+    IonButton, IonAlert, IonRouterOutlet
 } from '@ionic/angular/standalone';
 import { NavController } from '@ionic/angular';
 import { AuthService } from '../../services/auth.service';
@@ -23,7 +23,7 @@ import {
     imports: [
         IonContent, IonHeader, IonToolbar, IonTitle, IonMenu, IonMenuButton,
         IonButtons, IonList, IonItem, IonIcon, IonLabel, IonButton, IonAlert,
-        CommonModule, RouterModule
+        CommonModule, RouterModule, IonRouterOutlet
     ]
 })
 export class MenuPage {

@@ -1,13 +1,28 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>entrar-turma</ion-title>
-  </ion-toolbar>
+    <ion-toolbar color="dark">
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="/menu"></ion-back-button>
+        </ion-buttons>
+        <ion-title>Entrar em Turma</ion-title>
+    </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">entrar-turma</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content [fullscreen]="true" class="ion-padding">
+    <ion-card>
+        <ion-card-header>
+            <ion-card-title>Digite o código de acesso</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+            <form [formGroup]="formGroup" (ngSubmit)="entrar()">
+                <ion-item>
+                    <ion-label position="stacked">Código da Turma</ion-label>
+                    <ion-input type="text" formControlName="codigoAcesso" placeholder="Ex: ABC123"></ion-input>
+                </ion-item>
+
+                <ion-button type="submit" expand="block" color="danger" [disabled]="!formGroup.valid" class="ion-margin-top">
+                    Entrar na Turma
+                </ion-button>
+            </form>
+        </ion-card-content>
+    </ion-card>
 </ion-content>
