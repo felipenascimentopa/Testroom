@@ -1,31 +1,45 @@
-<ion-header [translucent]="true">
-    <ion-toolbar color="dark">
-        <ion-buttons slot="start">
-            <ion-back-button defaultHref="/menu/minhas-turmas"></ion-back-button>
-        </ion-buttons>
-        <ion-title>{{ isEditing ? 'Editar Turma' : 'Nova Turma' }}</ion-title>
-    </ion-toolbar>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Criar Turma</ion-title>
+  </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="ion-padding">
-    <form [formGroup]="formGroup" (ngSubmit)="salvar()">
+<ion-content>
+  <form [formGroup]="formGroup" (ngSubmit)="criar()">
+    <ion-card>
+      <ion-card-content>
         <ion-item>
-            <ion-label position="stacked">Nome da Turma *</ion-label>
-            <ion-input type="text" formControlName="nome" placeholder="Ex: Engenharia de Software - 2024.1"></ion-input>
+          <ion-label position="floating">Nome da turma *</ion-label>
+          <ion-input formControlName="nome"></ion-input>
         </ion-item>
-
         <ion-item>
-            <ion-label position="stacked">Descrição *</ion-label>
-            <ion-textarea formControlName="descricao" rows="4" placeholder="Descreva a turma..."></ion-textarea>
+          <ion-label position="floating">Descrição</ion-label>
+          <ion-textarea formControlName="descricao" rows="3"></ion-textarea>
         </ion-item>
+      </ion-card-content>
+    </ion-card>
 
-        <ion-item>
-            <ion-label position="stacked">Código de Acesso *</ion-label>
-            <ion-input type="text" formControlName="codigoAcesso" placeholder="Código para alunos entrarem"></ion-input>
-        </ion-item>
+    <ion-button type="submit" expand="block" [disabled]="!formGroup.valid" class="create-button">
+      Criar Turma
+    </ion-button>
+  </form>
 
-        <ion-button type="submit" expand="block" color="danger" [disabled]="!formGroup.valid" class="ion-margin-top">
-            {{ isEditing ? 'Atualizar' : 'Criar' }} Turma
-        </ion-button>
-    </form>
+  <ion-card *ngIf="turmaCriada" class="codigo-card">
+    <ion-card-header>
+      <ion-card-title>Turma criada com sucesso!</ion-card-title>
+      <ion-card-subtitle>Compartilhe o código abaixo com seus alunos</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="codigo">
+        {{ turmaCriada.codigoAcesso }}
+      </div>
+      <ion-button fill="clear" (click)="copiarCodigo()">
+        <ion-icon name="copy-outline" slot="start"></ion-icon>
+        Copiar código
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

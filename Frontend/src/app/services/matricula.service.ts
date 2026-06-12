@@ -31,6 +31,10 @@ export class MatriculaService {
         return this.http.post<MatriculaModel>(this.API_URL, matricula);
     }
 
+    inscreverAluno(alunoId: number, turmaId: number): Observable<MatriculaModel> {
+        return this.http.post<MatriculaModel>(this.API_URL, { idAluno: alunoId, idTurma: turmaId });
+    }
+
     excluir(id: number): Observable<MatriculaModel> {
         return this.http.delete<MatriculaModel>(`${this.API_URL}/${id}`);
     }

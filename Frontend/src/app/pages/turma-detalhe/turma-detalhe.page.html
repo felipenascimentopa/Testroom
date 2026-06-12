@@ -1,13 +1,115 @@
-<ion-header [translucent]="true">
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ turma?.nome }}</ion-title>
+    <ion-buttons slot="end" *ngIf="isProfessor">
+      <ion-button (click)="compartilharCodigo()">
+        <ion-icon name="share-social-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
   <ion-toolbar>
-    <ion-title>turma-detalhe</ion-title>
+    <ion-segment [(ngModel)]="abaAtual" mode="md">
+      <ion-segment-button value="atividades">
+        <ion-icon name="document-text-outline"></ion-icon>
+        <ion-label>Atividades</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="alunos" *ngIf="isProfessor">
+        <ion-icon name="people-outline"></ion-icon>
+        <ion-label>Alunos</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="config" *ngIf="isProfessor">
+        <ion-icon name="settings-outline"></ion-icon>
+        <ion-label>Config</ion-label>
+      </ion-segment-button>
+    </ion-segment>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">turma-detalhe</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <div [ngSwitch]="abaAtual">
+    <!-- Aba Atividades -->
+    <div *ngSwitchCase="'atividades'" class="ion-padding">
+      <ion-button *ngIf="isProfessor" expand="block" routerLink="/menu/criar-atividade/{{ turmaId }}" class="nova-atividade">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Nova Atividade
+      </ion-button>
+
+      <ion-list lines="none">
+        <ion-card *ngFor="let atividade of atividades" class="atividade-card">
+          <ion-card-header>
+            <ion-card-title>{{ atividade.titulo }}</ion-card-title>
+            <ion-card-subtitle>
+              Entrega: {{ atividade.dtEntrega | date:'dd/MM/yyyy HH:mm' }}
+            </ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <p>{{ atividade.descricao }}</p>
+            <ion-badge color="secondary" *ngIf="atividade.disponivel">Disponível</ion-badge>
+            <ion-badge color="danger" *ngIf="!atividade.disponivel">Encerrada</ion-badge>
+            <div class="botoes-atividade" style="margin-top: 12px;">
+              <ng-container *ngIf="!isProfessor">
+                <ion-button *ngIf="jaRespondeu[atividade.id]" 
+                            fill="clear" 
+                            size="small" 
+                            [routerLink]="['/menu/resultado-atividade', atividade.id]">
+                  Ver Resultado
+                </ion-button>
+                <ion-button *ngIf="!jaRespondeu[atividade.id]" 
+                            fill="clear" 
+                            size="small" 
+                            [routerLink]="['/menu/responder-atividade', atividade.id]">
+                  Responder
+                </ion-button>
+              </ng-container>
+              <ion-button *ngIf="isProfessor" 
+                          fill="clear" 
+                          size="small" 
+                          [routerLink]="['/menu/gerenciar-questoes', atividade.id]">
+                Gerenciar Questões
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-list>
+    </div>
+
+    <!-- Aba Alunos (somente professor) -->
+    <div *ngSwitchCase="'alunos'" class="ion-padding">
+      <ion-list>
+        <ion-item *ngFor="let aluno of alunos">
+          <ion-icon name="person-circle-outline" slot="start"></ion-icon>
+          <ion-label>
+            <h2>{{ aluno.nome }}</h2>
+            <p>{{ aluno.email }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+
+    <!-- Aba Configurações (somente professor) -->
+    <ng-container *ngSwitchCase="'config'">
+      <div class="ion-padding" *ngIf="turma">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Configurações da Turma</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item>
+              <ion-label position="floating">Nome da Turma</ion-label>
+              <ion-input [(ngModel)]="turma.nome"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Descrição</ion-label>
+              <ion-textarea [(ngModel)]="turma.descricao"></ion-textarea>
+            </ion-item>
+            <ion-button expand="block" (click)="salvarTurma()">Salvar Alterações</ion-button>
+            <ion-button expand="block" color="danger" fill="outline" (click)="excluirTurma()">Excluir Turma</ion-button>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </ng-container>
+  </div>
 </ion-content>

@@ -495,7 +495,8 @@ import {
   ɵɵvalidateAttribute,
   ɵɵviewQuery,
   ɵɵviewQuerySignal
-} from "./chunk-BTS7OZCD.js";
+} from "./chunk-5Y73JDFY.js";
+import "./chunk-YB2C65QT.js";
 import "./chunk-QHQP2P2Z.js";
 export {
   ANIMATION_MODULE_TYPE,

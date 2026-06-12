@@ -3,11 +3,16 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { 
     IonContent, IonHeader, IonToolbar, IonButton, IonItem, 
-    IonInput, IonLabel, IonTitle, IonButtons, IonBackButton
+    IonInput, IonLabel, IonTitle, IonButtons, IonBackButton,
+    IonIcon                           // <-- ADICIONE IonIcon
 } from '@ionic/angular/standalone';
-import { ToastController, NavController } from '@ionic/angular';
+import { ToastController, NavController } from '@ionic/angular'; // serviços
 import { AuthService } from '../../services/auth.service';
 import { RouterModule } from '@angular/router';
+
+// Importe os ícones que você vai usar (opcional, mas boa prática)
+import { addIcons } from 'ionicons';
+import { schoolOutline, mailOutline, lockClosedOutline, arrowForwardOutline } from 'ionicons/icons';
 
 @Component({
     selector: 'app-login',
@@ -17,7 +22,9 @@ import { RouterModule } from '@angular/router';
     imports: [
         IonContent, IonHeader, IonToolbar, IonButton, IonItem,
         IonInput, IonLabel, IonTitle, IonButtons, IonBackButton,
-        CommonModule, FormsModule, ReactiveFormsModule, RouterModule
+        IonIcon,                             // <-- ADICIONE AQUI
+        CommonModule, FormsModule, ReactiveFormsModule,
+        RouterModule
     ]
 })
 export class LoginPage {
@@ -31,6 +38,9 @@ export class LoginPage {
         private navController: NavController,
         private authService: AuthService
     ) {
+        // Registra os ícones para uso no template
+        addIcons({ schoolOutline, mailOutline, lockClosedOutline, arrowForwardOutline });
+
         this.email = "";
         this.senha = "";
 
@@ -42,6 +52,10 @@ export class LoginPage {
 
     ngOnInit() {
         this.authService.limparSessao();
+    }
+    
+    irParaCadastro() {
+        this.navController.navigateForward('/cadastro');
     }
 
     autenticar() {

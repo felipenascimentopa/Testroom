@@ -2,7 +2,7 @@ spring:
   application:
     name: testroom
   datasource:
-    url: ${DATASOURCE_URL:jdbc:mysql://localhost:3306/testroom}
+    url: ${DATASOURCE_URL:jdbc:mysql://localhost:3306/testroom2}
     username: ${DATASOURCE_USER:root}
     password: ${DATASOURCE_PWD:}
     driver-class-name: ${DATASOURCE_DRIVER:com.mysql.cj.jdbc.Driver}

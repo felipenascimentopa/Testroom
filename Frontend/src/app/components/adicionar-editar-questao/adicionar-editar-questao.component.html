@@ -1,0 +1,72 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>{{ questaoEdicao ? 'Editar Questão' : 'Nova Questão' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="fechar()">Fechar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="formGroup">
+    <ion-item>
+      <ion-label position="floating">Categoria *</ion-label>
+      <ion-select formControlName="idCategoria">
+        <ion-select-option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nome }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Tipo de Pergunta *</ion-label>
+      <ion-select formControlName="tipoPergunta" (ionChange)="onTipoChange($event)">
+        <ion-select-option *ngFor="let tipo of tiposDisponiveis" [value]="tipo.value">{{ tipo.label }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Enunciado * (aceita LaTeX)</ion-label>
+      <ion-textarea formControlName="enunciado" rows="5"></ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Peso *</ion-label>
+      <ion-input type="number" formControlName="peso" step="0.5" min="0.1"></ion-input>
+    </ion-item>
+
+    <ion-item *ngIf="mostrarGabarito">
+      <ion-label position="floating">Gabarito (resposta esperada)</ion-label>
+      <ion-input formControlName="gabaritoTexto"></ion-input>
+    </ion-item>
+
+    <!-- Alternativas -->
+    <div *ngIf="mostrarAlternativas" class="alternativas-section">
+      <ion-item-divider>
+        <ion-label>Alternativas</ion-label>
+      </ion-item-divider>
+      <div *ngFor="let alt of alternativas; let i = index" class="alternativa-item">
+        <ion-item lines="full">
+          <ion-input placeholder="Texto da alternativa" [(ngModel)]="alt.texto" [ngModelOptions]="{standalone: true}"></ion-input>
+          <ion-checkbox slot="end" [(ngModel)]="alt.correta" [ngModelOptions]="{standalone: true}"></ion-checkbox>
+          <ion-button fill="clear" color="danger" (click)="removerAlternativa(i)">
+            <ion-icon name="trash-outline"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </div>
+      <ion-button expand="block" fill="outline" (click)="adicionarAlternativa()" class="ion-margin-top">
+        + Adicionar Alternativa
+      </ion-button>
+    </div>
+
+    <!-- Feedbacks -->
+    <ion-item>
+      <ion-label position="floating">Feedback se acertar</ion-label>
+      <ion-textarea formControlName="feedbackCorreto" rows="2"></ion-textarea>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Feedback se errar</ion-label>
+      <ion-textarea formControlName="feedbackErrado" rows="2"></ion-textarea>
+    </ion-item>
+
+    <ion-button expand="block" (click)="salvarQuestao()" class="ion-margin-top">Salvar Questão</ion-button>
+  </form>
+</ion-content>

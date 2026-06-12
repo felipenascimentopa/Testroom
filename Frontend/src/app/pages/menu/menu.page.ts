@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router';
 import { 
     IonContent, IonHeader, IonToolbar, IonTitle, 
     IonMenu, IonMenuButton, IonButtons, IonList, IonItem, IonIcon, IonLabel,
-    IonButton, IonAlert
+    IonButton, IonAlert, IonRouterOutlet    
 } from '@ionic/angular/standalone';
 import { NavController } from '@ionic/angular';
 import { AuthService } from '../../services/auth.service';
@@ -20,10 +20,12 @@ import {
     templateUrl: './menu.page.html',
     styleUrls: ['./menu.page.scss'],
     standalone: true,
-    imports: [
-        IonContent, IonHeader, IonToolbar, IonTitle, IonMenu, IonMenuButton,
-        IonButtons, IonList, IonItem, IonIcon, IonLabel, IonButton, IonAlert,
+    imports: [  // <-- LISTA COMPLETA E CORRETA
+        IonContent, IonHeader, IonToolbar, IonTitle, 
+        IonMenu, IonMenuButton, IonButtons, IonList, IonItem, IonIcon, IonLabel,
+        IonButton, IonAlert, IonRouterOutlet,   // <-- ADICIONADO
         CommonModule, RouterModule
+        // IonicModule NÃO DEVE estar aqui
     ]
 })
 export class MenuPage {

@@ -1,0 +1,26 @@
+.header-icon {
+  text-align: center;
+  margin-top: 2rem;
+  ion-icon {
+    font-size: 5rem;
+    color: var(--ion-color-primary);
+  }
+  h2 {
+    margin-top: 1rem;
+  }
+}
+.codigo-input {
+  --background: #f4f6f9;
+  --border-radius: 12px;
+  margin: 2rem 0;
+  ion-input {
+    text-align: center;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+  }
+}
+.enter-button {
+  --background: linear-gradient(90deg, #667eea, #764ba2);
+  --border-radius: 30px;
+  margin-top: 1rem;
+}

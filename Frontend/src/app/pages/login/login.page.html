@@ -1,28 +1,29 @@
-<ion-header [translucent]="true">
-    <ion-toolbar color="dark">
-        <ion-title>TestRoom</ion-title>
-    </ion-toolbar>
-</ion-header>
+<ion-content class="ion-padding login-content">
+  <div class="logo-container">
+    <ion-icon name="school-outline" class="logo-icon"></ion-icon>
+    <h1>Testroom</h1>
+    <p>Sua plataforma de ensino inteligente</p>
+  </div>
 
-<ion-content [fullscreen]="true" class="ion-padding">
-    <div class="ion-text-center">
-        <h1 class="logo-text">TestRoom</h1>
-        <p>Sistema de Gerenciamento de Turmas</p>
-    </div>
+  <form [formGroup]="formGroup" (ngSubmit)="autenticar()">
+    <ion-item lines="none" class="input-item">
+      <ion-icon name="mail-outline" slot="start"></ion-icon>
+      <ion-input type="email" formControlName="email" placeholder="E-mail" required></ion-input>
+    </ion-item>
 
-    <form [formGroup]="formGroup" (ngSubmit)="autenticar()">
-        <ion-item>
-            <ion-label position="stacked">Email</ion-label>
-            <ion-input type="email" formControlName="email" placeholder="seu@email.com"></ion-input>
-        </ion-item>
+    <ion-item lines="none" class="input-item">
+      <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+      <ion-input type="password" formControlName="senha" placeholder="Senha" required></ion-input>
+    </ion-item>
 
-        <ion-item>
-            <ion-label position="stacked">Senha</ion-label>
-            <ion-input type="password" formControlName="senha"></ion-input>
-        </ion-item>
+    <ion-button type="submit" expand="block" [disabled]="!formGroup.valid" class="login-button">
+      Entrar
+      <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+    </ion-button>
+  </form>
 
-        <ion-button type="submit" expand="block" color="danger" [disabled]="!formGroup.valid" class="ion-margin-top">
-            Entrar
-        </ion-button>
-    </form>
+  <div class="signup-info">
+    <p>Novo por aqui? <a (click)="irParaCadastro()">Crie sua conta</a></p>
+    <p><small>Professor ou aluno, sejam bem-vindos</small></p>
+  </div>
 </ion-content>

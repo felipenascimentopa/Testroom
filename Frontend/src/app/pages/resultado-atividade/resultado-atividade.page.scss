@@ -1,0 +1,49 @@
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.nota-card {
+  text-align: center;
+  border-radius: 16px;
+  margin: 16px;
+}
+
+.nota-container {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.nota-valor {
+  font-size: 4rem;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.nota-texto {
+  font-size: 1.2rem;
+  color: var(--ion-color-medium);
+}
+
+.status {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-top: 8px;
+}
+
+.aprovado {
+  color: var(--ion-color-success);
+}
+
+.reprovado {
+  color: var(--ion-color-danger);
+}
+
+.voltar-button {
+  margin: 16px;
+}

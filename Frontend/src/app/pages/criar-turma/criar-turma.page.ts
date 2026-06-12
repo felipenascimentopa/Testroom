@@ -1,104 +1,55 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FormsModule, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import {
-    IonContent, IonHeader, IonToolbar, IonTitle, IonButtons,
-    IonBackButton, IonItem, IonLabel, IonInput, IonTextarea,
-    IonButton, IonLoading
-} from '@ionic/angular/standalone';
-import { ToastController, NavController } from '@ionic/angular';
-import { TurmaModel } from '../../model/turma.model';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { TurmaService } from '../../services/turma.service';
 import { AuthService } from '../../services/auth.service';
-import { RouterModule } from '@angular/router';
+import { TurmaModel } from '../../model/turma.model';
 
 @Component({
-    selector: 'app-criar-turma',
-    templateUrl: './criar-turma.page.html',
-    styleUrls: ['./criar-turma.page.scss'],
-    standalone: true,
-    imports: [
-        IonContent, IonHeader, IonToolbar, IonTitle, IonButtons,
-        IonBackButton, IonItem, IonLabel, IonInput, IonTextarea,
-        IonButton, IonLoading, CommonModule, FormsModule, ReactiveFormsModule, RouterModule
-    ]
+  selector: 'app-criar-turma',
+  templateUrl: './criar-turma.page.html',
+  styleUrls: ['./criar-turma.page.scss'],
+  standalone: true,
+  imports: [CommonModule, IonicModule, ReactiveFormsModule]
 })
-export class CriarTurmaPage implements OnInit {
-    formGroup: FormGroup;
-    turma: TurmaModel;
-    isEditing: boolean = false;
-    turmaId: number | null = null;
+export class CriarTurmaPage {
+  formGroup: FormGroup;
+  turmaCriada: TurmaModel | null = null;
 
-    constructor(
-        private formBuilder: FormBuilder,
-        private toastController: ToastController,
-        private navController: NavController,
-        private turmaService: TurmaService,
-        private authService: AuthService,
-        private activatedRoute: ActivatedRoute
-    ) {
-        this.turma = new TurmaModel();
-        this.formGroup = this.formBuilder.group({
-            'nome': ['', Validators.compose([Validators.required, Validators.minLength(3)])],
-            'descricao': ['', Validators.required],
-            'codigoAcesso': ['', Validators.compose([Validators.required, Validators.minLength(4)])]
-        });
-    }
+  constructor(
+    private fb: FormBuilder,
+    private turmaService: TurmaService,
+    private authService: AuthService,
+    private toastCtrl: ToastController
+  ) {
+    this.formGroup = this.fb.group({
+      nome: ['', Validators.required],
+      descricao: ['']
+    });
+  }
 
-    ngOnInit() {
-        this.turmaId = this.activatedRoute.snapshot.params['id'];
-        if (this.turmaId) {
-            this.isEditing = true;
-            this.carregarTurma();
-        }
-    }
+  criar() {
+    const novaTurma: TurmaModel = {
+      ...this.formGroup.value,
+      idProfessor: this.authService.obterUsuarioSessao()?.id
+    };
+    this.turmaService.salvar(novaTurma).subscribe({
+      next: (turma) => {
+        this.turmaCriada = turma;
+        this.formGroup.reset();
+      },
+      error: () => this.mostrarToast('Erro ao criar turma')
+    });
+  }
 
-    carregarTurma() {
-        if (this.turmaId) {
-            this.turmaService.buscarPorId(this.turmaId).subscribe({
-                next: (res) => {
-                    this.turma = res;
-                    this.formGroup.patchValue({
-                        nome: res.nome,
-                        descricao: res.descricao,
-                        codigoAcesso: res.codigoAcesso
-                    });
-                },
-                error: () => {
-                    this.exibirMensagem('Erro ao carregar turma');
-                }
-            });
-        }
-    }
+  copiarCodigo() {
+    navigator.clipboard.writeText(this.turmaCriada!.codigoAcesso!);
+    this.mostrarToast('Código copiado!');
+  }
 
-    salvar() {
-        this.turma.nome = this.formGroup.value.nome;
-        this.turma.descricao = this.formGroup.value.descricao;
-        this.turma.codigoAcesso = this.formGroup.value.codigoAcesso;
-
-        const usuario = this.authService.obterUsuarioSessao();
-        if (usuario && this.authService.isProfessor()) {
-            this.turma.idProfessor = usuario.id;
-        }
-
-        this.turmaService.salvar(this.turma).subscribe({
-            next: () => {
-                this.exibirMensagem(this.isEditing ? 'Turma atualizada com sucesso!' : 'Turma criada com sucesso!');
-                this.navController.navigateBack('/menu/minhas-turmas');
-            },
-            error: (erro) => {
-                console.error(erro);
-                this.exibirMensagem('Erro ao salvar turma');
-            }
-        });
-    }
-
-    async exibirMensagem(texto: string) {
-        const toast = await this.toastController.create({
-            message: texto,
-            duration: 1500
-        });
-        toast.present();
-    }
+  async mostrarToast(msg: string) {
+    const toast = await this.toastCtrl.create({ message: msg, duration: 2000 });
+    toast.present();
+  }
 }

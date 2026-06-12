@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Nova Atividade</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="formGroup">
+    <ion-card>
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="floating">Título *</ion-label>
+          <ion-input formControlName="titulo"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Descrição</ion-label>
+          <ion-textarea formControlName="descricao" rows="3"></ion-textarea>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Data de Entrega</ion-label>
+          <ion-datetime formControlName="dtEntrega" presentation="date-time" locale="pt-BR"></ion-datetime>
+        </ion-item>
+        <ion-item>
+          <ion-label>Disponível</ion-label>
+          <ion-toggle formControlName="disponivel"></ion-toggle>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-button expand="block" (click)="salvarEIrParaQuestoes()" [disabled]="!formGroup.valid" class="proximo-button">
+      Salvar e Adicionar Questões
+    </ion-button>
+  </form>
+</ion-content>

@@ -7,16 +7,25 @@ import { TurmaModel } from '../model/turma.model';
     providedIn: 'root',
 })
 export class TurmaService {
+    
     private readonly API_URL = 'http://localhost:8080/api/v1/turmas';
 
     constructor(private http: HttpClient) { }
-
+    
     listarTodas(): Observable<TurmaModel[]> {
         return this.http.get<TurmaModel[]>(this.API_URL);
     }
 
     buscarPorId(id: number): Observable<TurmaModel> {
         return this.http.get<TurmaModel>(`${this.API_URL}/${id}`);
+    }
+
+    buscarPorCodigo(codigo: string): Observable<TurmaModel[]> {
+        return this.http.get<TurmaModel[]>(`${this.API_URL}?codigo=${codigo}`);
+    }
+
+    atualizar(id: number, turma: TurmaModel): Observable<TurmaModel> {
+        return this.http.put<TurmaModel>(`${this.API_URL}/${id}`, turma);
     }
 
     buscarPorProfessor(professorId: number): Observable<TurmaModel[]> {

@@ -1,0 +1,73 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Questões da Atividade</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="abrirModal()">
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-title size="small">{{ atividadeTitulo }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="carregarDados()">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (carregando) {
+    <div class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+  }
+
+  @if (!carregando && questoes.length === 0) {
+    <div class="empty-state">
+      <ion-icon name="help-circle-outline"></ion-icon>
+      <h2>Nenhuma questão criada</h2>
+      <p>Clique no botão + para adicionar a primeira questão</p>
+    </div>
+  }
+
+  <ion-list lines="none" class="questoes-list">
+    @for (q of questoes; track q.id) {
+      <ion-card class="questao-card">
+        <ion-card-header>
+          <ion-card-title>Questão ({{ q.peso }} pts)</ion-card-title>
+          <ion-card-subtitle>{{ q.tipoPergunta | titlecase }}</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="enunciado" [innerHTML]="q.enunciado | latex"></div>
+          <div class="alternativas" *ngIf="q.alternativas && q.alternativas.length">
+            <p><strong>Alternativas:</strong></p>
+            <ul>
+              <li *ngFor="let alt of q.alternativas">
+                {{ alt.texto }} {{ alt.correta ? '✅' : '❌' }}
+              </li>
+            </ul>
+          </div>
+          <div class="gabarito" *ngIf="q.gabaritoTexto">
+            <p><strong>Gabarito:</strong> {{ q.gabaritoTexto }}</p>
+          </div>
+          <div class="feedback" *ngIf="q.feedbackCorreto || q.feedbackErrado">
+            <p><strong>Feedback correto:</strong> {{ q.feedbackCorreto || 'N/A' }}</p>
+            <p><strong>Feedback errado:</strong> {{ q.feedbackErrado || 'N/A' }}</p>
+          </div>
+          <div class="card-actions">
+            <ion-button fill="clear" color="primary" (click)="abrirModal(q)">
+              <ion-icon name="create-outline"></ion-icon> Editar
+            </ion-button>
+            <ion-button fill="clear" color="danger" (click)="excluirQuestao(q.id!)">
+              <ion-icon name="trash-outline"></ion-icon> Excluir
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    }
+  </ion-list>
+</ion-content>

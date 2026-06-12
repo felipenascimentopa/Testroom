@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Selecionar Questões</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+    <ion-label>Categorias</ion-label>
+    <ion-select multiple="true" [(ngModel)]="categoriasSelecionadas" (ionChange)="carregarQuestoes()">
+      <ion-select-option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nome }}</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Randomizar ordem</ion-label>
+    <ion-toggle [(ngModel)]="randomizar"></ion-toggle>
+  </ion-item>
+
+  <ion-list *ngIf="questoesBanco.length > 0">
+    <ion-item *ngFor="let q of questoesBanco">
+      <ion-checkbox [(ngModel)]="selecionadas[q.id]"></ion-checkbox>
+      <ion-label>
+        <h3>{{ q.enunciado | slice:0:100 }}</h3>
+        <p>{{ q.tipoPergunta }} – Peso: {{ q.peso }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-button expand="block" (click)="adicionarSelecionadas()" [disabled]="idsSelecionados.length === 0">
+    Adicionar {{ idsSelecionados.length }} questões
+  </ion-button>
+</ion-content>

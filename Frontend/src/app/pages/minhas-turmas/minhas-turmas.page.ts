@@ -1,103 +1,65 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import {
-    IonContent, IonHeader, IonToolbar, IonTitle, IonButtons,
-    IonMenuButton, IonList, IonItem, IonLabel, IonCard,
-    IonCardHeader, IonCardTitle, IonCardContent, IonChip,
-    IonIcon, IonFab, IonFabButton, IonToast
-} from '@ionic/angular/standalone';
-import { NavController, ToastController } from '@ionic/angular';
-import { TurmaModel } from '../../model/turma.model';
+import { IonicModule } from '@ionic/angular';
 import { TurmaService } from '../../services/turma.service';
-import { AuthService } from '../../services/auth.service';
 import { MatriculaService } from '../../services/matricula.service';
-
-import { addIcons } from 'ionicons';
-import { add, people, time, bookOutline } from 'ionicons/icons';
+import { AuthService } from '../../services/auth.service';
+import { TurmaModel } from '../../model/turma.model';
+import { RouterModule } from '@angular/router';
 
 @Component({
-    selector: 'app-minhas-turmas',
-    templateUrl: './minhas-turmas.page.html',
-    styleUrls: ['./minhas-turmas.page.scss'],
-    standalone: true,
-    imports: [
-        IonContent, IonHeader, IonToolbar, IonTitle, IonButtons,
-        IonMenuButton, IonList, IonItem, IonLabel, IonCard,
-        IonCardHeader, IonCardTitle, IonCardContent, IonChip,
-        IonIcon, IonFab, IonFabButton, IonToast, CommonModule, RouterModule
-    ]
+  selector: 'app-minhas-turmas',
+  templateUrl: './minhas-turmas.page.html',
+  styleUrls: ['./minhas-turmas.page.scss'],
+  standalone: true,
+  imports: [CommonModule, IonicModule, RouterModule]
 })
-export class MinhasTurmasPage {
-    turmas: TurmaModel[] = [];
-    loading: boolean = true;
+export class MinhasTurmasPage implements OnInit {
+  turmas: TurmaModel[] = [];
+  carregando = true;
+  isProfessor = false;
 
-    constructor(
-        private turmaService: TurmaService,
-        private authService: AuthService,
-        private matriculaService: MatriculaService,
-        private toastController: ToastController,
-        private navController: NavController
-    ) {
-        addIcons({ add, people, time, bookOutline });
-    }
+  constructor(
+    private turmaService: TurmaService,
+    private matriculaService: MatriculaService,
+    private authService: AuthService
+  ) { }
 
-    ionViewWillEnter() {
-        this.carregarTurmas();
-    }
+  ngOnInit() {
+    this.isProfessor = this.authService.isProfessor();
+    this.carregarTurmas();
+  }
 
-    carregarTurmas() {
-        this.loading = true;
-        const usuario = this.authService.obterUsuarioSessao();
-
-        if (this.authService.isProfessor() && usuario) {
-            this.turmaService.buscarPorProfessor(usuario.id).subscribe({
-                next: (res) => {
-                    this.turmas = res;
-                    this.loading = false;
-                },
-                error: () => {
-                    this.exibirMensagem('Erro ao carregar turmas');
-                    this.loading = false;
-                }
+  carregarTurmas(event?: any) {
+    const usuarioId = this.authService.obterUsuarioSessao()?.id || 0;
+    if (this.isProfessor) {
+      this.turmaService.buscarPorProfessor(usuarioId).subscribe({
+        next: (data) => { this.turmas = data; this.carregando = false; event?.complete?.(); },
+        error: () => { this.carregando = false; event?.complete?.(); }
+      });
+    } else {
+      this.matriculaService.buscarPorAluno(usuarioId).subscribe({
+        next: (matriculas) => {
+          const ids = matriculas.map(m => m.idTurma);
+          if (ids.length) {
+            Promise.all(ids.map(id => this.turmaService.buscarPorId(id).toPromise())).then(turmas => {
+              this.turmas = turmas.filter(t => t) as TurmaModel[];
+              this.carregando = false;
+              event?.complete?.();
             });
-        } else if (this.authService.isAluno() && usuario) {
-            this.matriculaService.buscarPorAluno(usuario.id).subscribe({
-                next: (matriculas) => {
-                    const turmasIds = matriculas.map(m => m.idTurma);
-                    if (turmasIds.length > 0) {
-                        this.turmaService.listarTodas().subscribe({
-                            next: (todasTurmas) => {
-                                this.turmas = todasTurmas.filter(t => turmasIds.includes(t.id));
-                                this.loading = false;
-                            },
-                            error: () => {
-                                this.exibirMensagem('Erro ao carregar turmas');
-                                this.loading = false;
-                            }
-                        });
-                    } else {
-                        this.turmas = [];
-                        this.loading = false;
-                    }
-                },
-                error: () => {
-                    this.exibirMensagem('Erro ao carregar matrículas');
-                    this.loading = false;
-                }
-            });
-        }
+          } else {
+            this.turmas = [];
+            this.carregando = false;
+            event?.complete?.();
+          }
+        },
+        error: () => { this.carregando = false; event?.complete?.(); }
+      });
     }
-
-    verTurma(turmaId: number) {
-        this.navController.navigateForward(`/turma-detalhe/${turmaId}`);
-    }
-
-    async exibirMensagem(texto: string) {
-        const toast = await this.toastController.create({
-            message: texto,
-            duration: 1500
-        });
-        toast.present();
-    }
+  }
+  isDono(turma: TurmaModel): boolean {
+    const usuario = this.authService.obterUsuarioSessao();
+    return this.authService.isProfessor() && turma.idProfessor === usuario?.id;
+  }
 }
+

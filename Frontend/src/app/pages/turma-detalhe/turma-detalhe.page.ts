@@ -1,170 +1,132 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import {
-    IonContent, IonHeader, IonToolbar, IonTitle, IonButtons,
-    IonBackButton, IonList, IonItem, IonLabel, IonCard,
-    IonCardHeader, IonCardTitle, IonCardContent, IonChip,
-    IonIcon, IonFab, IonFabButton, IonButton, IonBadge
+  IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle,
+  IonButton, IonIcon, IonSegment, IonSegmentButton, IonLabel,
+  IonContent, IonList, IonCard, IonCardHeader, IonCardTitle,
+  IonCardSubtitle, IonCardContent, IonBadge, IonItem, IonInput,
+  IonTextarea
 } from '@ionic/angular/standalone';
-import { NavController, ToastController, AlertController } from '@ionic/angular';
-import { TurmaModel } from '../../model/turma.model';
-import { AtividadeModel } from '../../model/atividade.model';
-import { MatriculaModel } from '../../model/matricula.model';
-import { AlunoModel } from '../../model/aluno.model';
+import { ToastController, AlertController, NavController } from '@ionic/angular';
 import { TurmaService } from '../../services/turma.service';
 import { AtividadeService } from '../../services/atividade.service';
 import { MatriculaService } from '../../services/matricula.service';
 import { AlunoService } from '../../services/aluno.service';
 import { AuthService } from '../../services/auth.service';
-
-import { addIcons } from 'ionicons';
-import { add, people, time, documentTextOutline, trash, create } from 'ionicons/icons';
+import { RespostaService } from '../../services/resposta.service';
+import { TurmaModel } from '../../model/turma.model';
+import { AtividadeModel } from '../../model/atividade.model';
+import { AlunoModel } from '../../model/aluno.model';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
-    selector: 'app-turma-detalhe',
-    templateUrl: './turma-detalhe.page.html',
-    styleUrls: ['./turma-detalhe.page.scss'],
-    standalone: true,
-    imports: [
-        IonContent, IonHeader, IonToolbar, IonTitle, IonButtons,
-        IonBackButton, IonList, IonItem, IonLabel, IonCard,
-        IonCardHeader, IonCardTitle, IonCardContent, IonChip,
-        IonIcon, IonFab, IonFabButton, IonButton, IonBadge,
-        CommonModule, RouterModule
-    ]
+  selector: 'app-turma-detalhe',
+  templateUrl: './turma-detalhe.page.html',
+  styleUrls: ['./turma-detalhe.page.scss'],
+  standalone: true,
+  imports: [
+    CommonModule, FormsModule, RouterModule,
+    IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle,
+    IonButton, IonIcon, IonSegment, IonSegmentButton, IonLabel,
+    IonContent, IonList, IonCard, IonCardHeader, IonCardTitle,
+    IonCardSubtitle, IonCardContent, IonBadge, IonItem, IonInput, IonTextarea
+  ]
 })
-export class TurmaDetalhePage {
-    turmaId!: number;
-    turma: TurmaModel | null = null;
-    atividades: AtividadeModel[] = [];
-    alunos: AlunoModel[] = [];
-    loading: boolean = true;
+export class TurmaDetalhePage implements OnInit {
+  turmaId: number = 0;
+  turma: TurmaModel | null = null;
+  atividades: AtividadeModel[] = [];
+  alunos: AlunoModel[] = [];
+  abaAtual = 'atividades';
+  isProfessor = false;
+  jaRespondeu: { [atividadeId: number]: boolean } = {};
 
-    constructor(
-        private activatedRoute: ActivatedRoute,
-        private turmaService: TurmaService,
-        private atividadeService: AtividadeService,
-        private matriculaService: MatriculaService,
-        private alunoService: AlunoService,
-        private authService: AuthService,
-        private toastController: ToastController,
-        private alertController: AlertController,
-        private navController: NavController
-    ) {
-        addIcons({ add, people, time, documentTextOutline, trash, create });
-    }
+  constructor(
+    private route: ActivatedRoute,
+    private turmaService: TurmaService,
+    private atividadeService: AtividadeService,
+    private matriculaService: MatriculaService,
+    private alunoService: AlunoService,
+    private authService: AuthService,
+    private respostaService: RespostaService,
+    private toastCtrl: ToastController,
+    private alertCtrl: AlertController,
+    private navCtrl: NavController
+  ) {}
 
-    ionViewWillEnter() {
-        this.turmaId = Number(this.activatedRoute.snapshot.params['id']);
-        this.carregarDados();
-    }
+  ngOnInit() {
+    this.turmaId = +this.route.snapshot.paramMap.get('id')!;
+    this.isProfessor = this.authService.isProfessor();  // <-- movido para antes do carregarDados
+    console.log('isProfessor (TurmaDetalhe):', this.isProfessor);
+    this.carregarDados();
+  }
 
-    carregarDados() {
-        this.loading = true;
-        this.turmaService.buscarPorId(this.turmaId).subscribe({
-            next: (turma) => {
-                this.turma = turma;
-                this.carregarAtividades();
-                if (this.isProfessor()) {
-                    this.carregarAlunos();
-                }
-                this.loading = false;
-            },
-            error: () => {
-                this.exibirMensagem('Erro ao carregar turma');
-                this.loading = false;
-            }
-        });
+  async carregarDados() {
+    try {
+      this.turma = await firstValueFrom(this.turmaService.buscarPorId(this.turmaId));
+      this.atividades = await firstValueFrom(this.atividadeService.buscarPorTurma(this.turmaId));
+      if (!this.isProfessor) {
+        const alunoId = this.authService.obterUsuarioSessao()?.id || 0;
+        for (const atividade of this.atividades) {
+          try {
+            await firstValueFrom(this.respostaService.obterResultados(alunoId, atividade.id!));
+            this.jaRespondeu[atividade.id!] = true;
+          } catch {
+            this.jaRespondeu[atividade.id!] = false;
+          }
+        }
+      }
+      if (this.isProfessor) {
+        const matriculas = await firstValueFrom(this.matriculaService.buscarPorTurma(this.turmaId));
+        const alunosIds = matriculas.map(m => m.idAluno);
+        if (alunosIds.length) {
+          const alunosPromises = alunosIds.map(id => firstValueFrom(this.alunoService.buscarPorId(id)));
+          this.alunos = await Promise.all(alunosPromises);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      this.mostrarToast('Erro ao carregar dados da turma');
     }
+  }
 
-    carregarAtividades() {
-        this.atividadeService.buscarPorTurma(this.turmaId).subscribe({
-            next: (atividades) => {
-                this.atividades = atividades;
-            },
-            error: () => {
-                this.exibirMensagem('Erro ao carregar atividades');
-            }
-        });
+  compartilharCodigo() {
+    if (this.turma?.codigoAcesso) {
+      navigator.clipboard.writeText(this.turma.codigoAcesso);
+      this.mostrarToast('Código copiado!');
     }
+  }
 
-    carregarAlunos() {
-        this.matriculaService.buscarPorTurma(this.turmaId).subscribe({
-            next: (matriculas) => {
-                const alunosIds = matriculas.map(m => m.idAluno);
-                if (alunosIds.length > 0) {
-                    this.alunoService.listarTodos().subscribe({
-                        next: (todosAlunos) => {
-                            this.alunos = todosAlunos.filter(a => alunosIds.includes(a.id));
-                        },
-                        error: () => {
-                            this.exibirMensagem('Erro ao carregar alunos');
-                        }
-                    });
-                } else {
-                    this.alunos = [];
-                }
-            },
-            error: () => {
-                this.exibirMensagem('Erro ao carregar matrículas');
-            }
-        });
+  async salvarTurma() {
+    if (this.turma) {
+      await firstValueFrom(this.turmaService.atualizar(this.turma.id!, this.turma));
+      this.mostrarToast('Turma atualizada');
     }
+  }
 
-    isProfessor(): boolean {
-        return this.authService.isProfessor();
-    }
+  async excluirTurma() {
+    const alert = await this.alertCtrl.create({
+      header: 'Excluir Turma',
+      message: 'Tem certeza? Todas as atividades e respostas serão perdidas.',
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Excluir',
+          handler: async () => {
+            await firstValueFrom(this.turmaService.excluir(this.turmaId));
+            this.mostrarToast('Turma excluída');
+            this.navCtrl.navigateRoot('/menu/minhas-turmas');
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
 
-    isAluno(): boolean {
-        return this.authService.isAluno();
-    }
-
-    verAtividade(atividadeId: number) {
-        this.navController.navigateForward(`/atividade-detalhe/${atividadeId}`);
-    }
-
-    novaAtividade() {
-        this.navController.navigateForward(`/criar-atividade/${this.turmaId}`);
-    }
-
-    editarTurma() {
-        this.navController.navigateForward(`/editar-turma/${this.turmaId}`);
-    }
-
-    async excluirTurma() {
-        const alert = await this.alertController.create({
-            header: 'Confirmar exclusão',
-            message: `Deseja realmente excluir a turma "${this.turma?.nome}"?`,
-            buttons: [
-                { text: 'Cancelar' },
-                {
-                    text: 'Excluir',
-                    cssClass: 'danger',
-                    handler: () => {
-                        if (this.turma) {
-                            this.turmaService.excluir(this.turma.id).subscribe({
-                                next: () => {
-                                    this.exibirMensagem('Turma excluída com sucesso');
-                                    this.navController.navigateBack('/minhas-turmas');
-                                },
-                                error: () => {
-                                    this.exibirMensagem('Erro ao excluir turma');
-                                }
-                            });
-                        }
-                    }
-                }
-            ]
-        });
-        await alert.present();
-    }
-
-    async exibirMensagem(texto: string) {
-        const toast = await this.toastController.create({
-            message: texto,
-            duration: 1500
-        });
-        toast.present();
-    }
+  async mostrarToast(msg: string) {
+    const toast = await this.toastCtrl.create({ message: msg, duration: 2000 });
+    toast.present();
+  }
 }

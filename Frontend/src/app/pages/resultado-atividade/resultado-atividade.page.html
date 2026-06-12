@@ -1,0 +1,79 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Resultado</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div *ngIf="carregando" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <div *ngIf="!carregando && resposta && atividade">
+    <ion-card class="nota-card">
+      <ion-card-header>
+        <ion-card-title>{{ atividade.titulo }}</ion-card-title>
+        <ion-card-subtitle>
+          Entrega: {{ atividade.dtEntrega | date:'dd/MM/yyyy HH:mm' }}<br>
+          Enviado em: {{ resposta.dtEnvio | date:'dd/MM/yyyy HH:mm' }}
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="nota-container">
+          <div class="nota-valor" 
+               [class.aprovado]="resposta.nota >= notaCorte" 
+               [class.reprovado]="resposta.nota < notaCorte">
+            {{ resposta.nota | number:'1.1-1' }}
+          </div>
+          <div class="nota-texto">de {{ totalPontos | number:'1.1-1' }}</div>
+        </div>
+        <div class="status" 
+             [class.aprovado]="resposta.nota >= notaCorte" 
+             [class.reprovado]="resposta.nota < notaCorte">
+          {{ resposta.nota >= notaCorte ? 'Aprovado' : 'Reprovado' }}
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card *ngIf="questoes.length > 0">
+      <ion-card-header>
+        <ion-card-title>Detalhamento das Questões</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list lines="full">
+          <ion-item *ngFor="let questao of questoes; let i = index">
+            <ion-label>
+              <h3>Questão {{ i+1 }} ({{ questao.peso }} pts)</h3>
+              <p class="enunciado" [innerHTML]="questao.enunciado | latex"></p>
+              <div class="resposta-aluno">
+                <strong>Sua resposta:</strong> 
+                <span [class.acertou]="getRespostaParaQuestao(questao.id!)?.acerto" 
+                      [class.errou]="!getRespostaParaQuestao(questao.id!)?.acerto">
+                  {{ getRespostaParaQuestao(questao.id!)?.respostaTexto || 'Não respondida' }}
+                </span>
+              </div>
+              <div class="feedback" *ngIf="getRespostaParaQuestao(questao.id!)?.acerto === false">
+                <ion-icon name="alert-circle"></ion-icon>
+                {{ questao.feedbackErrado || 'Resposta incorreta.' }}
+              </div>
+              <div class="feedback" *ngIf="getRespostaParaQuestao(questao.id!)?.acerto === true">
+                <ion-icon name="checkmark-circle"></ion-icon>
+                {{ questao.feedbackCorreto || 'Resposta correta!' }}
+              </div>
+            </ion-label>
+            <ion-badge slot="end" [color]="getRespostaParaQuestao(questao.id!)?.acerto ? 'success' : 'danger'">
+              {{ getRespostaParaQuestao(questao.id!)?.acerto ? 'Acertou' : 'Errou' }}
+            </ion-badge>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-button expand="block" (click)="voltar()" class="voltar-button">
+      Voltar para a Turma
+    </ion-button>
+  </div>
+</ion-content>

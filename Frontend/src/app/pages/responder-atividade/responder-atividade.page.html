@@ -1,0 +1,61 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ atividade?.titulo }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card *ngIf="atividade">
+    <ion-card-header>
+      <ion-card-subtitle>Instruções</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content [innerHTML]="atividade.descricao"></ion-card-content>
+  </ion-card>
+
+  <div class="respostas-container">
+    <div *ngFor="let questao of questoes; let i = index" class="questao-card">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Questão {{ i+1 }} ({{ questao.peso }} ponto(s))</ion-card-title>
+          <ion-card-subtitle>{{ questao.tipoPergunta }}</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="enunciado" [innerHTML]="questao.enunciado | latex"></div>
+
+          <div *ngIf="questao.tipoPergunta === 'DISSERTATIVA'">
+            <ion-textarea [(ngModel)]="respostas[questao.id!]" placeholder="Digite sua resposta..."></ion-textarea>
+          </div>
+
+          <div *ngIf="questao.tipoPergunta === 'NUMERICA'">
+            <ion-input [(ngModel)]="respostas[questao.id!]" type="number" placeholder="Digite um número"></ion-input>
+          </div>
+
+          <div *ngIf="questao.tipoPergunta === 'VF' || questao.tipoPergunta === 'UNICA_ESCOLHA'">
+            <ion-radio-group [(ngModel)]="respostas[questao.id!]">
+              <ion-item *ngFor="let alt of alternativasPorQuestao[questao.id!]">
+                <ion-radio [value]="alt.id" slot="start"></ion-radio>
+                <ion-label>{{ alt.texto }}</ion-label>
+              </ion-item>
+            </ion-radio-group>
+          </div>
+
+          <div *ngIf="questao.tipoPergunta === 'MULTIPLA_ESCOLHA'">
+            <ion-list>
+              <ion-item *ngFor="let alt of alternativasPorQuestao[questao.id!]">
+                <ion-checkbox [(ngModel)]="respostasMultiplas[questao.id!][alt.id!]"></ion-checkbox>
+                <ion-label>{{ alt.texto }}</ion-label>
+              </ion-item>
+            </ion-list>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <ion-button expand="block" (click)="enviarRespostas()" class="enviar-button">
+      Enviar Respostas
+    </ion-button>
+  </div>
+</ion-content>
