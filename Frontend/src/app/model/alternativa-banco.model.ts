@@ -1,6 +1,6 @@
-export class AlternativaModel {
+export class AlternativaBancoModel {
   id: number;
-  idQuestao: number;
+  idQuestaoBanco: number;
   texto: string;
   correta: boolean;
   ordem: number;
@@ -8,10 +8,9 @@ export class AlternativaModel {
 
   constructor() {
     this.id = 0;
-    this.idQuestao = 0;
+    this.idQuestaoBanco = 0;
     this.texto = '';
     this.correta = false;
     this.ordem = 0;
-    this.feedback = '';
   }
 }

@@ -6,6 +6,13 @@ export class AtividadeModel {
     dtCriacao: string;
     dtEntrega: string;
     disponivel: boolean;
+    
+    tentativasMax: number;
+    calculoNota: 'ULTIMA' | 'MEDIA' | 'MELHOR';
+    permiteVerGabaritoAntecipado: boolean;
+    permiteVerFeedbackAntecipado: boolean;
+    permiteVerNotaAntecipado: boolean;
+    permiteVerRespostasAntecipado: boolean;
 
     constructor() {
         this.id = 0;
@@ -15,5 +22,11 @@ export class AtividadeModel {
         this.dtCriacao = "";
         this.dtEntrega = "";
         this.disponivel = true;
+        this.tentativasMax = 1;
+        this.calculoNota = 'ULTIMA';
+        this.permiteVerGabaritoAntecipado = false;
+        this.permiteVerFeedbackAntecipado = false;
+        this.permiteVerNotaAntecipado = false;
+        this.permiteVerRespostasAntecipado = false;
     }
 }

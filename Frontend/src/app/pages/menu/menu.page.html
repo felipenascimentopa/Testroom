@@ -13,6 +13,7 @@
     </div>
 
     <ion-list>
+      <!-- MENU DO PROFESSOR -->
       @if (isProfessor()) {
         <ion-item routerLink="/menu/minhas-turmas" detail="true">
           <ion-icon name="school-outline" slot="start"></ion-icon>
@@ -22,7 +23,17 @@
           <ion-icon name="people-outline" slot="start"></ion-icon>
           <ion-label>Criar Turma</ion-label>
         </ion-item>
+        <ion-item routerLink="/menu/categorias" detail="true">
+          <ion-icon name="folder-outline" slot="start"></ion-icon>
+          <ion-label>Gerenciar Categorias</ion-label>
+        </ion-item>
+        <ion-item routerLink="/menu/banco-questoes" detail="true">
+          <ion-icon name="library-outline" slot="start"></ion-icon>
+          <ion-label>Banco de Questões</ion-label>
+        </ion-item>
       }
+
+      <!-- MENU DO ALUNO -->
       @if (isAluno()) {
         <ion-item routerLink="/menu/minhas-turmas" detail="true">
           <ion-icon name="school-outline" slot="start"></ion-icon>
@@ -32,7 +43,13 @@
           <ion-icon name="clipboard-outline" slot="start"></ion-icon>
           <ion-label>Entrar em Turma</ion-label>
         </ion-item>
+        <ion-item routerLink="/menu/meus-resultados" detail="true">
+          <ion-icon name="document-text-outline" slot="start"></ion-icon>
+          <ion-label>Meus Resultados</ion-label>
+        </ion-item>
       }
+
+      <!-- SAIR (comum a ambos) -->
       <ion-item (click)="logout()" detail="false">
         <ion-icon name="log-out-outline" slot="start"></ion-icon>
         <ion-label>Sair</ion-label>
@@ -41,4 +58,5 @@
   </ion-content>
 </ion-menu>
 
+<!-- O "contentId" deve bater com o "id" do router-outlet abaixo -->
 <ion-router-outlet id="main-content"></ion-router-outlet>

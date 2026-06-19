@@ -23,6 +23,42 @@
           <ion-label position="stacked">Data de Entrega</ion-label>
           <ion-datetime formControlName="dtEntrega" presentation="date-time" locale="pt-BR"></ion-datetime>
         </ion-item>
+
+        <!-- NOVAS CONFIGURAÇÕES -->
+        <ion-item>
+          <ion-label position="floating">Tentativas Máximas</ion-label>
+          <ion-input type="number" formControlName="tentativasMax" min="1"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Cálculo da Nota</ion-label>
+          <ion-select formControlName="calculoNota">
+            <ion-select-option value="ULTIMA">Última tentativa</ion-select-option>
+            <ion-select-option value="MEDIA">Média das tentativas</ion-select-option>
+            <ion-select-option value="MELHOR">Melhor tentativa</ion-select-option>
+          </ion-select>
+        </ion-item>
+        
+        <ion-item-divider class="ion-margin-top">
+          <ion-label>Permissões de Visualização (Antes da Entrega)</ion-label>
+        </ion-item-divider>
+        
+        <ion-item>
+          <ion-label>Ver Gabarito</ion-label>
+          <ion-toggle formControlName="permiteVerGabaritoAntecipado"></ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-label>Ver Feedback</ion-label>
+          <ion-toggle formControlName="permiteVerFeedbackAntecipado"></ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-label>Ver Nota</ion-label>
+          <ion-toggle formControlName="permiteVerNotaAntecipado"></ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-label>Ver Respostas</ion-label>
+          <ion-toggle formControlName="permiteVerRespostasAntecipado"></ion-toggle>
+        </ion-item>
+        
         <ion-item>
           <ion-label>Disponível</ion-label>
           <ion-toggle formControlName="disponivel"></ion-toggle>

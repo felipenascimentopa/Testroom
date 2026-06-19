@@ -3,7 +3,7 @@ package br.cefetmg.testroom.controller;
 import br.cefetmg.testroom.model.RespostaAtividade;
 import br.cefetmg.testroom.model.RespostaQuestao;
 import br.cefetmg.testroom.service.RespostaService;
-import br.cefetmg.testroom.repository.RespostaQuestaoRepository;  // importe o repositório
+import br.cefetmg.testroom.repository.RespostaQuestaoRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +15,7 @@ import java.util.Map;
 @RequestMapping("/api/v1/respostas")
 public class RespostaController {
     private final RespostaService service;
-    private final RespostaQuestaoRepository respostaQuestaoRepository;  // adicione
+    private final RespostaQuestaoRepository respostaQuestaoRepository;
 
     public RespostaController(RespostaService service, RespostaQuestaoRepository respostaQuestaoRepository) {
         this.service = service;
@@ -33,20 +33,24 @@ public class RespostaController {
         } catch (ResponseStatusException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
         } catch (RuntimeException e) {
-            if (e.getMessage().contains("já respondeu")) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-            }
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno: " + e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro inesperado: " + e.getMessage());
         }
     }
 
     @GetMapping("/aluno/{alunoId}/atividade/{atividadeId}")
     public RespostaAtividade obterResultado(@PathVariable Long alunoId, @PathVariable Long atividadeId) {
         return service.obterResultado(alunoId, atividadeId);
+    }
+    
+    @GetMapping("/aluno/{alunoId}/atividade/{atividadeId}/final-grade")
+    public ResponseEntity<Double> getNotaFinal(@PathVariable Long alunoId, @PathVariable Long atividadeId) {
+        try {
+            Double notaFinal = service.calcularNotaFinal(alunoId, atividadeId);
+            return ResponseEntity.ok(notaFinal);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(0.0);
+        }
     }
 
     @GetMapping("/detalhes/{respostaAtividadeId}")

@@ -29,7 +29,13 @@ export class CriarAtividadePage implements OnInit {
       titulo: ['', Validators.required],
       descricao: [''],
       dtEntrega: [''],
-      disponivel: [true]
+      disponivel: [true],
+      tentativasMax: [1, Validators.min(1)],
+      calculoNota: ['ULTIMA'],
+      permiteVerGabaritoAntecipado: [false],
+      permiteVerFeedbackAntecipado: [false],
+      permiteVerNotaAntecipado: [false],
+      permiteVerRespostasAntecipado: [false]
     });
   }
 
@@ -37,20 +43,19 @@ export class CriarAtividadePage implements OnInit {
     this.turmaId = +this.route.snapshot.paramMap.get('turmaId')!;
   }
 
-  async salvarEIrParaQuestoes() {
+    async salvarEIrParaQuestoes() {
     const novaAtividade: AtividadeModel = {
       ...this.formGroup.value,
       idTurma: this.turmaId
     };
     try {
       const salva = await firstValueFrom(this.atividadeService.salvar(novaAtividade));
-      this.mostrarToast('Atividade criada! Agora adicione as questões.');
-      this.navCtrl.navigateForward(`/menu/selecionar-questoes-banco/${salva.id}`);
+      this.mostrarToast('Atividade criada! Adicione as questões manualmente ou importe do banco.');
+      this.navCtrl.navigateForward(`/menu/gerenciar-questoes/${salva.id}`);
     } catch (error) {
       this.mostrarToast('Erro ao criar atividade');
     }
   }
-
   async mostrarToast(msg: string) {
     const toast = await this.toastCtrl.create({ message: msg, duration: 2000 });
     toast.present();

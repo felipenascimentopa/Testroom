@@ -8,14 +8,14 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "alternativa")
-public class Alternativa {
+@Entity(name = "alternativa_banco")
+public class AlternativaBanco {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "id_questao", nullable = false)
-    private Long idQuestao;
+    @Column(name = "id_questao_banco", nullable = false)
+    private Long idQuestaoBanco;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String texto;
@@ -23,7 +23,7 @@ public class Alternativa {
     private Boolean correta = false;
 
     private Integer ordem = 0;
-    
+
     @Column(columnDefinition = "TEXT")
     private String feedback;
 }

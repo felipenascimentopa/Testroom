@@ -38,7 +38,6 @@
       <ion-input formControlName="gabaritoTexto"></ion-input>
     </ion-item>
 
-    <!-- Alternativas -->
     <div *ngIf="mostrarAlternativas" class="alternativas-section">
       <ion-item-divider>
         <ion-label>Alternativas</ion-label>
@@ -51,13 +50,16 @@
             <ion-icon name="trash-outline"></ion-icon>
           </ion-button>
         </ion-item>
+        <ion-item lines="none" style="--min-height: 40px; margin-top: -15px; margin-bottom: 10px;">
+          <ion-label position="stacked" style="font-size: 0.9em; color: var(--ion-color-medium);">Feedback se marcar esta opção:</ion-label>
+          <ion-input placeholder="Ex: Você errou, pois Java é uma linguagem compilada." [(ngModel)]="alt.feedback" [ngModelOptions]="{standalone: true}"></ion-input>
+        </ion-item>
       </div>
       <ion-button expand="block" fill="outline" (click)="adicionarAlternativa()" class="ion-margin-top">
         + Adicionar Alternativa
       </ion-button>
     </div>
 
-    <!-- Feedbacks -->
     <ion-item>
       <ion-label position="floating">Feedback se acertar</ion-label>
       <ion-textarea formControlName="feedbackCorreto" rows="2"></ion-textarea>

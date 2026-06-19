@@ -9,13 +9,16 @@ import java.util.*;
 @Service
 public class QuestaoBancoService {
     private final QuestaoBancoRepository questaoBancoRepository;
+    private final AlternativaBancoRepository alternativaBancoRepository; 
     private final AlternativaRepository alternativaRepository;
     private final QuestaoRepository questaoRepository;
 
     public QuestaoBancoService(QuestaoBancoRepository questaoBancoRepository,
+                               AlternativaBancoRepository alternativaBancoRepository, 
                                AlternativaRepository alternativaRepository,
                                QuestaoRepository questaoRepository) {
         this.questaoBancoRepository = questaoBancoRepository;
+        this.alternativaBancoRepository = alternativaBancoRepository; 
         this.alternativaRepository = alternativaRepository;
         this.questaoRepository = questaoRepository;
     }
@@ -40,7 +43,7 @@ public class QuestaoBancoService {
     public void copiarParaAtividade(Long atividadeId, List<Long> idsQuestoesBanco, boolean randomizar) {
         List<QuestaoBanco> originais = questaoBancoRepository.findAllById(idsQuestoesBanco);
         if (randomizar) {
-            Collections.shuffle(originais);
+            Collections.shuffle(originais); 
         }
         for (QuestaoBanco original : originais) {
             // Copiar questão
@@ -55,14 +58,19 @@ public class QuestaoBancoService {
             nova.setGabaritoTexto(original.getGabaritoTexto());
             nova = questaoRepository.save(nova);
 
-            // Copiar alternativas
-            List<Alternativa> alternativasOriginais = alternativaRepository.findByIdQuestao(original.getId());
-            for (Alternativa altOriginal : alternativasOriginais) {
+            List<AlternativaBanco> alternativasOriginais = alternativaBancoRepository.findByIdQuestaoBanco(original.getId());
+            
+            if (randomizar) {
+                Collections.shuffle(alternativasOriginais); 
+            }
+
+            for (AlternativaBanco altOriginal : alternativasOriginais) {
                 Alternativa novaAlt = new Alternativa();
                 novaAlt.setIdQuestao(nova.getId());
                 novaAlt.setTexto(altOriginal.getTexto());
                 novaAlt.setCorreta(altOriginal.getCorreta());
                 novaAlt.setOrdem(altOriginal.getOrdem());
+                novaAlt.setFeedback(altOriginal.getFeedback());
                 alternativaRepository.save(novaAlt);
             }
         }

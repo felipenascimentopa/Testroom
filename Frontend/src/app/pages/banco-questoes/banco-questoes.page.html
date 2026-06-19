@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start"><ion-back-button></ion-back-button></ion-buttons>
+    <ion-title>Banco de Questões</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-item>
+    <ion-label>Filtrar por Categoria</ion-label>
+    <ion-select [(ngModel)]="categoriaSelecionada" (ionChange)="carregarQuestoes()">
+      <ion-select-option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nome }}</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-list>
+    <ion-item *ngFor="let q of questoes">
+      <ion-label class="ion-text-wrap">
+        <h3>{{ q.enunciado | slice:0:100 }}...</h3>
+        <p>{{ q.tipoPergunta }} - Peso: {{ q.peso }}</p>
+      </ion-label>
+      <ion-button fill="clear" color="danger" (click)="excluirQuestao(q.id!)">
+        <ion-icon name="trash-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+</ion-content>

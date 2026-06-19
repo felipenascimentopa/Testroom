@@ -10,6 +10,7 @@ import { RespostaAtividadeModel } from '../../model/resposta-atividade.model';
 import { firstValueFrom } from 'rxjs';
 import { QuestaoService } from '../../services/questao.service';
 import { QuestaoModel } from '../../model/questao.model';
+import { AlternativaModel } from '../../model/alternativa.model';
 import { LatexPipe } from 'src/pipes/latex.pipe';
 
 interface DetalheResposta {
@@ -36,6 +37,8 @@ export class ResultadoAtividadePage implements OnInit {
   carregando = true;
   totalPontos: number = 0;
   notaCorte: number = 0;
+  notaFinal: number = 0;
+  alternativasDaQuestao: { [key: number]: AlternativaModel[] } = {};
 
   constructor(
     private route: ActivatedRoute,
@@ -61,14 +64,25 @@ export class ResultadoAtividadePage implements OnInit {
   async carregarDados() {
     try {
       const alunoId = this.authService.obterUsuarioSessao()?.id || 0;
+      
       this.atividade = await firstValueFrom(this.atividadeService.buscarPorId(this.atividadeId));
       this.resposta = await firstValueFrom(this.respostaService.obterResultados(alunoId, this.atividadeId));
+      
+      this.notaFinal = await firstValueFrom(this.respostaService.obterNotaFinal(alunoId, this.atividadeId));
+
       if (this.resposta?.id) {
         this.detalhes = await firstValueFrom(this.respostaService.obterDetalhes(this.resposta.id));
-        // Garante que acerto seja booleano
         this.detalhes = this.detalhes.map(d => ({ ...d, acerto: d.acerto === true }));
       }
+      
       this.questoes = await firstValueFrom(this.questaoService.listarPorAtividade(this.atividadeId));
+      
+      for (const q of this.questoes) {
+        if (['VF', 'UNICA_ESCOLHA', 'MULTIPLA_ESCOLHA'].includes(q.tipoPergunta)) {
+          this.alternativasDaQuestao[q.id!] = await firstValueFrom(this.questaoService.listarAlternativas(q.id!));
+        }
+      }
+
       this.totalPontos = this.questoes.reduce((sum, q) => sum + (q.peso || 0), 0);
       this.notaCorte = this.totalPontos * 0.6;
     } catch (error) {
@@ -81,6 +95,16 @@ export class ResultadoAtividadePage implements OnInit {
 
   getRespostaParaQuestao(questaoId: number): DetalheResposta | undefined {
     return this.detalhes.find(d => d.idQuestao === questaoId);
+  }
+
+  getTextoAlternativa(questaoId: number, idAlternativa: number): string | null {
+    const alt = this.alternativasDaQuestao[questaoId]?.find(a => a.id === idAlternativa);
+    return alt ? alt.texto : null;
+  }
+
+  getFeedbackAlternativa(questaoId: number, idAlternativa: number): string | null {
+    const alt = this.alternativasDaQuestao[questaoId]?.find(a => a.id === idAlternativa);
+    return alt && alt.feedback ? alt.feedback : null;
   }
 
   voltar() {

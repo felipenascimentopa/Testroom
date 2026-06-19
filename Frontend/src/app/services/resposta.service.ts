@@ -5,9 +5,6 @@ import { RespostaAtividadeModel } from '../model/resposta-atividade.model';
 
 @Injectable({ providedIn: 'root' })
 export class RespostaService {
-  obterDetalhes(respostaAtividadeId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.API_URL}/detalhes/${respostaAtividadeId}`);
-  }
   private readonly API_URL = 'http://localhost:8080/api/v1/respostas';
 
   constructor(private http: HttpClient) { }
@@ -21,5 +18,13 @@ export class RespostaService {
 
   obterResultados(alunoId: number, atividadeId: number): Observable<RespostaAtividadeModel> {
     return this.http.get<RespostaAtividadeModel>(`${this.API_URL}/aluno/${alunoId}/atividade/${atividadeId}`);
+  }
+
+  obterDetalhes(respostaAtividadeId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.API_URL}/detalhes/${respostaAtividadeId}`);
+  }
+
+  obterNotaFinal(alunoId: number, atividadeId: number): Observable<number> {
+    return this.http.get<number>(`${this.API_URL}/aluno/${alunoId}/atividade/${atividadeId}/final-grade`);
   }
 }

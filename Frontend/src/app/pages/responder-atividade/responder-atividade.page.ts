@@ -61,7 +61,7 @@ export class ResponderAtividadePage implements OnInit {
     }
   }
 
-  async enviarRespostas() {
+    async enviarRespostas() {
     const payload: any = {};
     for (const q of this.questoes) {
       if (q.tipoPergunta === 'MULTIPLA_ESCOLHA') {
@@ -77,11 +77,17 @@ export class ResponderAtividadePage implements OnInit {
     const alunoId = this.authService.obterUsuarioSessao()?.id || 0;
     try {
       await firstValueFrom(this.respostaService.submeter(this.atividadeId, alunoId, payload, 0));
+      this.mostrarToast('Resposta(s) enviada(s) com sucesso!');
       this.navCtrl.navigateForward(`/menu/resultado-atividade/${this.atividadeId}`);
     } catch (error: any) {
       let mensagem = 'Erro ao enviar respostas.';
       if (error.status === 409) {
-        mensagem = 'Você já respondeu esta atividade.';
+        try {
+          const atividade = await firstValueFrom(this.atividadeService.buscarPorId(this.atividadeId));
+          mensagem = `Você excedeu o limite de ${atividade.tentativasMax} tentativa(s) para esta atividade.`;
+        } catch (e) {
+          mensagem = 'Você excedeu o limite de tentativas para esta atividade.';
+        }
       } else if (error.status === 500) {
         mensagem = 'Erro interno no servidor. Tente novamente.';
       }

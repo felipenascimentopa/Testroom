@@ -17,31 +17,44 @@ public class RespostaService {
     private final RespostaAlternativaRepository respostaAlternativaRepository;
     private final QuestaoRepository questaoRepository;
     private final AlternativaRepository alternativaRepository;
+    private final AtividadeRepository atividadeRepository;
 
     public RespostaService(RespostaAtividadeRepository respostaAtividadeRepository,
             RespostaQuestaoRepository respostaQuestaoRepository,
             RespostaAlternativaRepository respostaAlternativaRepository,
             QuestaoRepository questaoRepository,
-            AlternativaRepository alternativaRepository) {
+            AlternativaRepository alternativaRepository,
+            AtividadeRepository atividadeRepository) {
         this.respostaAtividadeRepository = respostaAtividadeRepository;
         this.respostaQuestaoRepository = respostaQuestaoRepository;
         this.respostaAlternativaRepository = respostaAlternativaRepository;
         this.questaoRepository = questaoRepository;
         this.alternativaRepository = alternativaRepository;
+        this.atividadeRepository = atividadeRepository;
     }
 
     @Transactional(rollbackFor = Exception.class)
     public RespostaAtividade submeterRespostas(Long alunoId, Long atividadeId,
             Map<Long, Object> respostasPorQuestao,
             Integer tempoGasto) {
-        if (respostaAtividadeRepository.findByIdAlunoAndIdAtividade(alunoId, atividadeId).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Aluno já respondeu esta atividade");
+        
+        Atividade atividade = atividadeRepository.findById(atividadeId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Atividade não encontrada"));
+
+        long tentativasFeitas = respostaAtividadeRepository.countByIdAlunoAndIdAtividade(alunoId, atividadeId);
+        int tentativaAtual = (int) tentativasFeitas + 1;
+
+        // Verifica se o limite de tentativas foi excedido
+        if (tentativasFeitas >= atividade.getTentativasMax()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, 
+                    "Limite de " + atividade.getTentativasMax() + " tentativas excedido para esta atividade.");
         }
 
         RespostaAtividade respostaAtividade = new RespostaAtividade();
         respostaAtividade.setIdAluno(alunoId);
         respostaAtividade.setIdAtividade(atividadeId);
         respostaAtividade.setTempoGasto(tempoGasto != null ? tempoGasto : 0);
+        respostaAtividade.setTentativaNumero(tentativaAtual); // Salva o número da nova tentativa
         respostaAtividade = respostaAtividadeRepository.save(respostaAtividade);
 
         List<Questao> questoes = questaoRepository.findByIdAtividade(atividadeId);
@@ -94,23 +107,16 @@ public class RespostaService {
                     String respostaStr = respostaUsuario != null ? respostaUsuario.toString().trim() : "";
                     rq.setRespostaTexto(respostaStr);
 
-                    // Log do valor bruto recebido
-                    System.out.println("NUMERICA - valor bruto: '" + respostaUsuario + "' (classe: "
-                            + (respostaUsuario != null ? respostaUsuario.getClass().getSimpleName() : "null") + ")");
-
                     Double respostaNum = null;
                     if (respostaUsuario != null) {
-                        // Se já for um número (Number), converte direto
                         if (respostaUsuario instanceof Number) {
                             respostaNum = ((Number) respostaUsuario).doubleValue();
-                        }
-                        // Se for String, tenta converter
-                        else if (respostaUsuario instanceof String) {
+                        } else if (respostaUsuario instanceof String) {
                             String normalized = ((String) respostaUsuario).trim().replace(',', '.');
                             try {
                                 respostaNum = Double.parseDouble(normalized);
                             } catch (NumberFormatException e) {
-                                System.out.println("NUMERICA - erro ao parsear string: " + normalized);
+                                // ignora
                             }
                         }
                     }
@@ -121,25 +127,21 @@ public class RespostaService {
                         try {
                             gabaritoNum = Double.parseDouble(gabStr);
                         } catch (NumberFormatException e) {
-                            System.out.println("NUMERICA - erro ao parsear gabarito: " + gabStr);
+                            // ignora
                         }
                     }
 
                     correta = false;
                     if (respostaNum != null && gabaritoNum != null) {
                         double diff = Math.abs(respostaNum - gabaritoNum);
-                        correta = diff < 0.0000001; // tolerância alta
-                        System.out.println("NUMERICA - respostaNum=" + respostaNum + ", gabaritoNum=" + gabaritoNum
-                                + ", diff=" + diff + ", correta=" + correta);
+                        correta = diff < 0.0000001;
                     } else {
                         String respText = respostaUsuario != null ? respostaUsuario.toString().trim() : "";
                         String gabText = q.getGabaritoTexto() != null ? q.getGabaritoTexto().trim() : "";
                         correta = respText.equalsIgnoreCase(gabText);
-                        System.out.println(
-                                "NUMERICA - fallback textual: '" + respText + "' == '" + gabText + "' -> " + correta);
                     }
 
-                    rq.setAcerto(correta); // já seta diretamente
+                    rq.setAcerto(correta);
                     rq = respostaQuestaoRepository.save(rq);
                     break;
 
@@ -164,16 +166,34 @@ public class RespostaService {
         return respostaAtividadeRepository.save(respostaAtividade);
     }
 
+    public Double calcularNotaFinal(Long alunoId, Long atividadeId) {
+        Atividade atividade = atividadeRepository.findById(atividadeId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Atividade não encontrada"));
+        
+        List<RespostaAtividade> tentativas = respostaAtividadeRepository.findAllByIdAlunoAndIdAtividade(alunoId, atividadeId);
+        if (tentativas.isEmpty()) {
+            return 0.0;
+        }
+
+        switch (atividade.getCalculoNota()) {
+            case MELHOR:
+                return tentativas.stream().mapToDouble(RespostaAtividade::getNota).max().orElse(0.0);
+            case MEDIA:
+                return tentativas.stream().mapToDouble(RespostaAtividade::getNota).average().orElse(0.0);
+            case ULTIMA:
+            default:
+                return tentativas.get(tentativas.size() - 1).getNota();
+        }
+    }
+
     public RespostaAtividade obterResultado(Long alunoId, Long atividadeId) {
-        return respostaAtividadeRepository.findByIdAlunoAndIdAtividade(alunoId, atividadeId)
+        return respostaAtividadeRepository.findFirstByIdAlunoAndIdAtividadeOrderByTentativaNumeroDesc(alunoId, atividadeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resposta não encontrada"));
     }
 
     private Long converterParaLong(Object obj) {
-        if (obj == null)
-            return null;
-        if (obj instanceof Number)
-            return ((Number) obj).longValue();
+        if (obj == null) return null;
+        if (obj instanceof Number) return ((Number) obj).longValue();
         if (obj instanceof String) {
             try {
                 return Long.parseLong((String) obj);
@@ -186,13 +206,11 @@ public class RespostaService {
 
     private List<Long> converterParaListaLong(Object obj) {
         List<Long> lista = new ArrayList<>();
-        if (obj == null)
-            return lista;
+        if (obj == null) return lista;
         if (obj instanceof List) {
             for (Object item : (List<?>) obj) {
                 Long valor = converterParaLong(item);
-                if (valor != null)
-                    lista.add(valor);
+                if (valor != null) lista.add(valor);
             }
         }
         return lista;

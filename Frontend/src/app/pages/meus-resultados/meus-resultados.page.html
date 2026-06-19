@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start"><ion-back-button></ion-back-button></ion-buttons>
+    <ion-title>Meus Resultados</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-card *ngFor="let item of resultados">
+    <ion-card-header>
+      <ion-card-title>{{ item.atividade.titulo }}</ion-card-title>
+      <ion-card-subtitle>Nota: {{ item.resposta.nota | number:'1.1-1' }}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      Enviado em: {{ item.resposta.dtEnvio | date:'dd/MM/yyyy HH:mm' }}
+    </ion-card-content>
+  </ion-card>
+  <div *ngIf="!carregando && resultados.length === 0" class="ion-padding ion-text-center">
+    <p>Você ainda não realizou nenhuma atividade.</p>
+  </div>
+</ion-content>

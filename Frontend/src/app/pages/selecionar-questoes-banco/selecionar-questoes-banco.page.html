@@ -30,7 +30,8 @@
     </ion-item>
   </ion-list>
 
-  <ion-button expand="block" (click)="adicionarSelecionadas()" [disabled]="idsSelecionados.length === 0">
+  <!-- Botão movido PARA DENTRO DO ION-CONTENT -->
+  <ion-button expand="block" (click)="adicionarSelecionadas()" [disabled]="idsSelecionados.length === 0" class="ion-margin">
     Adicionar {{ idsSelecionados.length }} questões
   </ion-button>
 </ion-content>

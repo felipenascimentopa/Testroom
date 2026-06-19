@@ -29,6 +29,9 @@ public class RespostaAtividade {
     @Column(name = "tempo_gasto")
     private Integer tempoGasto;
 
+    @Column(name = "tentativa_numero")
+    private Integer tentativaNumero = 1;
+
     @PrePersist
     protected void onCreate() {
         dtEnvio = LocalDateTime.now();

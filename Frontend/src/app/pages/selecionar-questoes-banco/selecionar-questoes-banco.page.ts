@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, ToastController, NavController } from '@ionic/angular';
+import { IonicModule, ToastController, NavController } from '@ionic/angular'; // Importe aqui
 import { ActivatedRoute } from '@angular/router';
 import { CategoriaService } from '../../services/categoria.service';
 import { QuestaoBancoService } from '../../services/questao-banco.service';
@@ -15,6 +15,7 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './selecionar-questoes-banco.page.html',
   styleUrls: ['./selecionar-questoes-banco.page.scss'],
   standalone: true,
+  // IMPORTANTE: Apenas componentes visuais/pipes/modules aqui!
   imports: [CommonModule, FormsModule, IonicModule]
 })
 export class SelecionarQuestoesBancoPage implements OnInit {
@@ -31,7 +32,7 @@ export class SelecionarQuestoesBancoPage implements OnInit {
     private questaoBancoService: QuestaoBancoService,
     private authService: AuthService,
     private toastCtrl: ToastController,
-    private navCtrl: NavController
+    private navCtrl: NavController // Serviço no construtor
   ) {}
 
   ngOnInit() {

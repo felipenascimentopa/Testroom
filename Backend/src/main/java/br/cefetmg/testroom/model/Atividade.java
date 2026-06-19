@@ -31,6 +31,29 @@ public class Atividade {
     private LocalDateTime dtEntrega;
 
     private Boolean disponivel = true;
+    
+    @Column(name = "tentativas_max")
+    private Integer tentativasMax = 1;
+
+    @Column(name = "calculo_nota")
+    @Enumerated(EnumType.STRING)
+    private CalculoNota calculoNota = CalculoNota.ULTIMA;
+
+    @Column(name = "permite_ver_gabarito_antecipado")
+    private Boolean permiteVerGabaritoAntecipado = false;
+
+    @Column(name = "permite_ver_feedback_antecipado")
+    private Boolean permiteVerFeedbackAntecipado = false;
+
+    @Column(name = "permite_ver_nota_antecipado")
+    private Boolean permiteVerNotaAntecipado = false;
+
+    @Column(name = "permite_ver_respostas_antecipado")
+    private Boolean permiteVerRespostasAntecipado = false;
+
+    public enum CalculoNota {
+        ULTIMA, MEDIA, MELHOR
+    }
 
     @PrePersist
     protected void onCreate() {

@@ -8,18 +8,15 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "categoria")
-public class Categoria {
+@Entity(name = "categoria_compartilhada")
+public class CategoriaCompartilhada {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
-    private String nome;
+    @Column(name = "id_categoria", nullable = false)
+    private Long idCategoria;
 
-    @Column(name = "id_professor", nullable = false)
-    private Long idProfessor;
-
-    @Column(name = "id_categoria_pai")
-    private Long idCategoriaPai;
+    @Column(name = "id_professor_compartilhado", nullable = false)
+    private Long idProfessorCompartilhado;
 }

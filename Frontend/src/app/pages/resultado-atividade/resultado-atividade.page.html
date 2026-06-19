@@ -24,16 +24,19 @@
       <ion-card-content>
         <div class="nota-container">
           <div class="nota-valor" 
-               [class.aprovado]="resposta.nota >= notaCorte" 
-               [class.reprovado]="resposta.nota < notaCorte">
-            {{ resposta.nota | number:'1.1-1' }}
+               [class.aprovado]="notaFinal >= notaCorte" 
+               [class.reprovado]="notaFinal < notaCorte">
+            {{ notaFinal | number:'1.1-1' }}
           </div>
           <div class="nota-texto">de {{ totalPontos | number:'1.1-1' }}</div>
         </div>
         <div class="status" 
-             [class.aprovado]="resposta.nota >= notaCorte" 
-             [class.reprovado]="resposta.nota < notaCorte">
-          {{ resposta.nota >= notaCorte ? 'Aprovado' : 'Reprovado' }}
+             [class.aprovado]="notaFinal >= notaCorte" 
+             [class.reprovado]="notaFinal < notaCorte">
+          {{ notaFinal >= notaCorte ? 'Aprovado' : 'Reprovado' }}
+        </div>
+        <div class="info-extra" style="font-size: 0.9rem; text-align: center; margin-top: 10px; color: var(--ion-color-medium);">
+          * Nota calculada com base na regra definida pelo professor ({{ atividade.calculoNota }}).
         </div>
       </ion-card-content>
     </ion-card>
@@ -45,23 +48,44 @@
       <ion-card-content>
         <ion-list lines="full">
           <ion-item *ngFor="let questao of questoes; let i = index">
-            <ion-label>
+            <ion-label class="ion-text-wrap">
               <h3>Questão {{ i+1 }} ({{ questao.peso }} pts)</h3>
               <p class="enunciado" [innerHTML]="questao.enunciado | latex"></p>
-              <div class="resposta-aluno">
+              
+              <div class="resposta-aluno" style="margin-top: 8px; padding: 10px; background: var(--ion-color-light); border-radius: 8px;">
                 <strong>Sua resposta:</strong> 
                 <span [class.acertou]="getRespostaParaQuestao(questao.id!)?.acerto" 
-                      [class.errou]="!getRespostaParaQuestao(questao.id!)?.acerto">
-                  {{ getRespostaParaQuestao(questao.id!)?.respostaTexto || 'Não respondida' }}
+                      [class.errou]="!getRespostaParaQuestao(questao.id!)?.acerto" 
+                      style="font-weight: bold;">
+                  
+                  <ng-container *ngIf="questao.tipoPergunta === 'MULTIPLA_ESCOLHA'">
+                    <ng-container *ngFor="let idAlt of getRespostaParaQuestao(questao.id!)?.respostaTexto?.replace('[','')?.replace(']','')?.split(', '); let last = last">
+                      {{ getTextoAlternativa(questao.id!, +idAlt) }}{{ last ? '' : ', ' }}
+                    </ng-container>
+                    <span *ngIf="!getRespostaParaQuestao(questao.id!)?.respostaTexto">Não respondida</span>
+                  </ng-container>
+
+                  <ng-container *ngIf="questao.tipoPergunta !== 'MULTIPLA_ESCOLHA'">
+                    {{ getRespostaParaQuestao(questao.id!)?.respostaTexto || 'Não respondida' }}
+                  </ng-container>
                 </span>
               </div>
-              <div class="feedback" *ngIf="getRespostaParaQuestao(questao.id!)?.acerto === false">
+
+              <div class="feedback" *ngIf="getRespostaParaQuestao(questao.id!)?.acerto === false" style="color: var(--ion-color-danger); margin-top: 8px;">
                 <ion-icon name="alert-circle"></ion-icon>
                 {{ questao.feedbackErrado || 'Resposta incorreta.' }}
               </div>
-              <div class="feedback" *ngIf="getRespostaParaQuestao(questao.id!)?.acerto === true">
+              <div class="feedback" *ngIf="getRespostaParaQuestao(questao.id!)?.acerto === true" style="color: var(--ion-color-success); margin-top: 8px;">
                 <ion-icon name="checkmark-circle"></ion-icon>
                 {{ questao.feedbackCorreto || 'Resposta correta!' }}
+              </div>
+
+              <div *ngIf="questao.tipoPergunta === 'UNICA_ESCOLHA' || questao.tipoPergunta === 'VF'">
+                <ng-container *ngIf="getRespostaParaQuestao(questao.id!)?.respostaTexto as altIdStr">
+                  <div *ngIf="getFeedbackAlternativa(questao.id!, +altIdStr) as feedbackAlt" style="margin-top: 5px; padding: 5px; border-left: 3px solid var(--ion-color-primary); background: rgba(var(--ion-color-primary-rgb), 0.05);">
+                    <small><strong>Dica:</strong> {{ feedbackAlt }}</small>
+                  </div>
+                </ng-container>
               </div>
             </ion-label>
             <ion-badge slot="end" [color]="getRespostaParaQuestao(questao.id!)?.acerto ? 'success' : 'danger'">

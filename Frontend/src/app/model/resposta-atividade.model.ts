@@ -5,6 +5,7 @@ export class RespostaAtividadeModel {
   nota: number;
   dtEnvio: string;
   tempoGasto?: number;
+  tentativaNumero?: number; 
 
   constructor() {
     this.id = 0;

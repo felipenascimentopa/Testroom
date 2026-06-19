@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, AlertController, ToastController, ModalController } from '@ionic/angular';
+import { IonicModule, AlertController, ToastController, ModalController, NavController } from '@ionic/angular'; // Importe os serviços aqui
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
@@ -16,7 +16,8 @@ import { LatexPipe } from 'src/pipes/latex.pipe';
   templateUrl: './gerenciar-questoes.page.html',
   styleUrls: ['./gerenciar-questoes.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, RouterModule, LatexPipe]
+  // IMPORTANTE: NÃO coloque NavController aqui! Apenas componentes/pipes.
+  imports: [CommonModule, IonicModule, RouterModule, LatexPipe] 
 })
 export class GerenciarQuestoesPage implements OnInit {
   atividadeId: number = 0;
@@ -30,7 +31,8 @@ export class GerenciarQuestoesPage implements OnInit {
     private atividadeService: AtividadeService,
     private alertCtrl: AlertController,
     private toastCtrl: ToastController,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private navCtrl: NavController // Serviço injetado aqui, fora do imports
   ) {}
 
   ngOnInit() {
@@ -43,7 +45,6 @@ export class GerenciarQuestoesPage implements OnInit {
       const atividade = await firstValueFrom(this.atividadeService.buscarPorId(this.atividadeId));
       this.atividadeTitulo = atividade.titulo;
       this.questoes = await firstValueFrom(this.questaoService.listarPorAtividade(this.atividadeId));
-      // Carrega alternativas para cada questão que precise
       for (const q of this.questoes) {
         if (['VF', 'UNICA_ESCOLHA', 'MULTIPLA_ESCOLHA'].includes(q.tipoPergunta)) {
           q.alternativas = await firstValueFrom(this.questaoService.listarAlternativas(q.id!));
@@ -58,6 +59,11 @@ export class GerenciarQuestoesPage implements OnInit {
     }
   }
 
+  // Método para ir ao banco de questões
+  irParaBancoDeQuestoes() {
+    this.navCtrl.navigateForward(`/menu/selecionar-questoes-banco/${this.atividadeId}`);
+  }
+
   async abrirModal(questao?: QuestaoModel) {
     const modal = await this.modalCtrl.create({
       component: AdicionarEditarQuestaoComponent,
@@ -68,7 +74,7 @@ export class GerenciarQuestoesPage implements OnInit {
     });
     modal.onDidDismiss().then(result => {
       if (result.data?.success) {
-        this.carregarDados(); // recarrega a lista
+        this.carregarDados();
       }
     });
     await modal.present();
@@ -77,7 +83,7 @@ export class GerenciarQuestoesPage implements OnInit {
   async excluirQuestao(id: number) {
     const alert = await this.alertCtrl.create({
       header: 'Confirmar exclusão',
-      message: 'Tem certeza que deseja excluir esta questão? Todas as alternativas e respostas associadas serão perdidas.',
+      message: 'Tem certeza que deseja excluir esta questão?',
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         { 

@@ -3,16 +3,18 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { 
     IonContent, IonHeader, IonToolbar, IonTitle, 
-    IonMenu, IonMenuButton, IonButtons, IonList, IonItem, IonIcon, IonLabel,
-    IonButton, IonAlert, IonRouterOutlet    
+    IonMenu, IonButtons, IonList, IonItem, IonIcon, IonLabel,
+    IonRouterOutlet    
 } from '@ionic/angular/standalone';
-import { NavController } from '@ionic/angular';
+import { NavController } from '@ionic/angular'; // Serviços ficam aqui, NUNCA no imports do componente
 import { AuthService } from '../../services/auth.service';
 
+// Importação dos ícones para o template
 import { addIcons } from 'ionicons';
 import { 
     peopleOutline, schoolOutline, documentTextOutline, 
-    logOutOutline, personOutline, clipboardOutline
+    logOutOutline, personOutline, clipboardOutline, 
+    folderOutline, libraryOutline 
 } from 'ionicons/icons';
 
 @Component({
@@ -20,12 +22,12 @@ import {
     templateUrl: './menu.page.html',
     styleUrls: ['./menu.page.scss'],
     standalone: true,
-    imports: [  // <-- LISTA COMPLETA E CORRETA
+    imports: [
+        // APENAS componentes visuais, pipes e módulos aqui!
         IonContent, IonHeader, IonToolbar, IonTitle, 
-        IonMenu, IonMenuButton, IonButtons, IonList, IonItem, IonIcon, IonLabel,
-        IonButton, IonAlert, IonRouterOutlet,   // <-- ADICIONADO
-        CommonModule, RouterModule
-        // IonicModule NÃO DEVE estar aqui
+        IonMenu, IonButtons, IonList, IonItem, IonIcon, IonLabel,
+        IonRouterOutlet, 
+        CommonModule, RouterModule 
     ]
 })
 export class MenuPage {
@@ -36,7 +38,12 @@ export class MenuPage {
         private authService: AuthService,
         private navController: NavController
     ) {
-        addIcons({ peopleOutline, schoolOutline, documentTextOutline, logOutOutline, personOutline, clipboardOutline });
+        // Registra os ícones para uso no template HTML
+        addIcons({ 
+            peopleOutline, schoolOutline, documentTextOutline, 
+            logOutOutline, personOutline, clipboardOutline, 
+            folderOutline, libraryOutline 
+        });
     }
 
     ionViewWillEnter() {
