@@ -1,4 +1,4 @@
-package br.cefetmg.testroom;
+package com.cefet.testroom;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

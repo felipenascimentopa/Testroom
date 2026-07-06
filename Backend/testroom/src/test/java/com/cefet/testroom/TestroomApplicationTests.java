@@ -1,4 +1,4 @@
-package br.cefetmg.testroom;
+package com.cefet.testroom;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
