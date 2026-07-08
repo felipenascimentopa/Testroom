@@ -1,5 +1,10 @@
 package com.cefet.backend.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -7,6 +12,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,4 +41,8 @@ public class Questao {
 
      @Column(nullable = false, length = 255, unique = false)
      private String criadoPor;
+
+     @ManyToMany(mappedBy = "questoes")
+     @JsonIgnore
+     private Set<Categoria> categorias = new HashSet<>();
 }

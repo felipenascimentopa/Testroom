@@ -1,11 +1,16 @@
 package com.cefet.backend.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -37,4 +42,14 @@ public class Professor {
 
      @Column(nullable = true, length = 255, unique = false)
      private String descricao;
+
+     @ManyToMany
+     @JoinTable(
+          name = "professor_categoria",
+          joinColumns = @JoinColumn(name = "professor_id"),
+          inverseJoinColumns = @JoinColumn(name = "categoria_id")
+     )
+     private Set<Categoria> categorias = new HashSet<>();
+
+
 }
