@@ -7,4 +7,5 @@ import java.util.List;
 public interface QuestaoBancoRepository extends JpaRepository<QuestaoBanco, Long> {
     List<QuestaoBanco> findByIdCategoria(Long idCategoria);
     List<QuestaoBanco> findByIdProfessor(Long idProfessor);
+    
 }

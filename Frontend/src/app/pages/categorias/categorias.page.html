@@ -9,9 +9,12 @@
 </ion-header>
 <ion-content>
   <ion-list>
-    <ion-item *ngFor="let cat of categorias">
+    <ion-item *ngFor="let cat of categorias" (click)="verQuestoes(cat.id!)" detail="true">
       <ion-label>{{ cat.nome }}</ion-label>
-      <ion-button fill="clear" color="danger" (click)="excluirCategoria(cat.id!)">
+      <ion-button fill="clear" color="primary" (click)="$event.stopPropagation(); editarCategoria(cat)">
+        <ion-icon name="create-outline"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" color="danger" (click)="$event.stopPropagation(); excluirCategoria(cat.id!)">
         <ion-icon name="trash-outline"></ion-icon>
       </ion-button>
     </ion-item>

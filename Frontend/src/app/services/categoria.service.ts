@@ -7,7 +7,7 @@ import { CategoriaModel } from '../model/categoria.model';
 export class CategoriaService {
   private readonly API_URL = 'http://localhost:8080/api/v1/categorias';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   listarPorProfessor(professorId: number): Observable<CategoriaModel[]> {
     return this.http.get<CategoriaModel[]>(`${this.API_URL}/professor/${professorId}`);
@@ -15,6 +15,10 @@ export class CategoriaService {
 
   criar(categoria: CategoriaModel): Observable<CategoriaModel> {
     return this.http.post<CategoriaModel>(this.API_URL, categoria);
+  }
+
+  atualizar(id: number, categoria: CategoriaModel): Observable<CategoriaModel> {
+    return this.http.put<CategoriaModel>(`${this.API_URL}/${id}`, categoria);
   }
 
   excluir(id: number): Observable<void> {

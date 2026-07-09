@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { IonicModule, AlertController, ToastController, ModalController, NavController } from '@ionic/angular'; // Importe os serviços aqui
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-
 import { QuestaoService } from '../../services/questao.service';
 import { AtividadeService } from '../../services/atividade.service';
 import { QuestaoModel } from '../../model/questao.model';
@@ -32,7 +31,7 @@ export class GerenciarQuestoesPage implements OnInit {
     private alertCtrl: AlertController,
     private toastCtrl: ToastController,
     private modalCtrl: ModalController,
-    private navCtrl: NavController // Serviço injetado aqui, fora do imports
+    private navCtrl: NavController
   ) {}
 
   ngOnInit() {

@@ -13,6 +13,8 @@ import { ToastController, AlertController, NavController } from '@ionic/angular'
 import { TurmaService } from '../../services/turma.service';
 import { AtividadeService } from '../../services/atividade.service';
 import { MatriculaService } from '../../services/matricula.service';
+import { ModalController } from '@ionic/angular';
+import { EditarAtividadeComponent } from '../../components/editar-atividade/editar-atividade.component';
 import { AlunoService } from '../../services/aluno.service';
 import { AuthService } from '../../services/auth.service';
 import { RespostaService } from '../../services/resposta.service';
@@ -31,7 +33,7 @@ import { firstValueFrom } from 'rxjs';
     IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle,
     IonButton, IonIcon, IonSegment, IonSegmentButton, IonLabel,
     IonContent, IonList, IonCard, IonCardHeader, IonCardTitle,
-    IonCardSubtitle, IonCardContent, IonBadge, IonItem, IonInput, IonTextarea
+    IonCardSubtitle, IonCardContent, IonBadge, IonItem, IonInput, IonTextarea, EditarAtividadeComponent
   ]
 })
 export class TurmaDetalhePage implements OnInit {
@@ -53,12 +55,13 @@ export class TurmaDetalhePage implements OnInit {
     private respostaService: RespostaService,
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private modalCtrl: ModalController
   ) {}
 
   ngOnInit() {
     this.turmaId = +this.route.snapshot.paramMap.get('id')!;
-    this.isProfessor = this.authService.isProfessor();  // <-- movido para antes do carregarDados
+    this.isProfessor = this.authService.isProfessor(); 
     console.log('isProfessor (TurmaDetalhe):', this.isProfessor);
     this.carregarDados();
   }
@@ -124,6 +127,42 @@ export class TurmaDetalhePage implements OnInit {
     });
     alert.present();
   }
+
+  async editarAtividade(atividade: AtividadeModel) {
+  const modal = await this.modalCtrl.create({
+    component: EditarAtividadeComponent,
+    componentProps: { atividade: { ...atividade } } // passamos uma cópia
+  });
+  modal.onDidDismiss().then(result => {
+    if (result.data?.success) {
+      this.carregarDados(); // recarregar lista
+    }
+  });
+  await modal.present();
+}
+
+async excluirAtividade(id: number) {
+  const alert = await this.alertCtrl.create({
+    header: 'Excluir Atividade',
+    message: 'Tem certeza? Todas as questões e respostas serão perdidas.',
+    buttons: [
+      { text: 'Cancelar', role: 'cancel' },
+      {
+        text: 'Excluir',
+        handler: async () => {
+          try {
+            await firstValueFrom(this.atividadeService.excluir(id));
+            this.mostrarToast('Atividade excluída');
+            this.carregarDados();
+          } catch (error) {
+            this.mostrarToast('Erro ao excluir atividade');
+          }
+        }
+      }
+    ]
+  });
+  alert.present();
+}
 
   async mostrarToast(msg: string) {
     const toast = await this.toastCtrl.create({ message: msg, duration: 2000 });

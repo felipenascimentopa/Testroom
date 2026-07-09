@@ -18,11 +18,9 @@ export const routes: Routes = [
       { path: 'gerenciar-questoes/:atividadeId', loadComponent: () => import('./pages/gerenciar-questoes/gerenciar-questoes.page').then(m => m.GerenciarQuestoesPage) },
       { path: 'responder-atividade/:id', loadComponent: () => import('./pages/responder-atividade/responder-atividade.page').then(m => m.ResponderAtividadePage) },
       { path: 'selecionar-questoes-banco/:atividadeId', loadComponent: () => import('./pages/selecionar-questoes-banco/selecionar-questoes-banco.page').then(m => m.SelecionarQuestoesBancoPage) },
-      // NOVAS ROTAS (filhas do menu)
       { path: 'categorias', loadComponent: () => import('./pages/categorias/categorias.page').then(m => m.CategoriasPage) },
       { path: 'banco-questoes', loadComponent: () => import('./pages/banco-questoes/banco-questoes.page').then(m => m.BancoQuestoesPage) },
       { path: 'meus-resultados', loadComponent: () => import('./pages/meus-resultados/meus-resultados.page').then(m => m.MeusResultadosPage) }
     ]
   }
 ];
-// REMOVI a rota extra duplicada 'selecionar-questoes-banco' que estava aqui embaixo

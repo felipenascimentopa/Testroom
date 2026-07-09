@@ -30,9 +30,9 @@
 
 <ion-content>
   <div [ngSwitch]="abaAtual">
-    <!-- Aba Atividades -->
     <div *ngSwitchCase="'atividades'" class="ion-padding">
-      <ion-button *ngIf="isProfessor" expand="block" routerLink="/menu/criar-atividade/{{ turmaId }}" class="nova-atividade">
+      <ion-button *ngIf="isProfessor" expand="block" routerLink="/menu/criar-atividade/{{ turmaId }}"
+        class="nova-atividade">
         <ion-icon name="add-circle-outline" slot="start"></ion-icon>
         Nova Atividade
       </ion-button>
@@ -48,35 +48,37 @@
           <ion-card-content>
             <p>{{ atividade.descricao }}</p>
             <ion-badge color="secondary" *ngIf="atividade.disponivel">Disponível</ion-badge>
-            <ion-badge color="danger" *ngIf="!atividade.disponivel">Encerrada</ion-badge>
-            <div class="botoes-atividade" style="margin-top: 12px;">
+            <ion-badge color="danger" *ngIf="!atividade.disponivel">Indisponível</ion-badge>
+            <div class="botoes-atividade" style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+              <!-- Botões para aluno -->
               <ng-container *ngIf="!isProfessor">
-                <ion-button *ngIf="jaRespondeu[atividade.id]" 
-                            fill="clear" 
-                            size="small" 
-                            [routerLink]="['/menu/resultado-atividade', atividade.id]">
+                <ion-button *ngIf="jaRespondeu[atividade.id]" fill="clear" size="small"
+                  [routerLink]="['/menu/resultado-atividade', atividade.id]">
                   Ver Resultado
                 </ion-button>
-                <ion-button *ngIf="!jaRespondeu[atividade.id]" 
-                            fill="clear" 
-                            size="small" 
-                            [routerLink]="['/menu/responder-atividade', atividade.id]">
+                <ion-button *ngIf="!jaRespondeu[atividade.id]" fill="clear" size="small"
+                  [routerLink]="['/menu/responder-atividade', atividade.id]">
                   Responder
                 </ion-button>
               </ng-container>
-              <ion-button *ngIf="isProfessor" 
-                          fill="clear" 
-                          size="small" 
-                          [routerLink]="['/menu/gerenciar-questoes', atividade.id]">
-                Gerenciar Questões
-              </ion-button>
+              <!-- Botões para professor -->
+              <ng-container *ngIf="isProfessor">
+                <ion-button fill="clear" size="small" (click)="editarAtividade(atividade)">
+                  <ion-icon name="create-outline"></ion-icon> Editar
+                </ion-button>
+                <ion-button fill="clear" size="small" color="danger" (click)="excluirAtividade(atividade.id!)">
+                  <ion-icon name="trash-outline"></ion-icon> Excluir
+                </ion-button>
+                <ion-button fill="clear" size="small" [routerLink]="['/menu/gerenciar-questoes', atividade.id]">
+                  Gerenciar Questões
+                </ion-button>
+              </ng-container>
             </div>
           </ion-card-content>
         </ion-card>
       </ion-list>
     </div>
 
-    <!-- Aba Alunos (somente professor) -->
     <div *ngSwitchCase="'alunos'" class="ion-padding">
       <ion-list>
         <ion-item *ngFor="let aluno of alunos">
@@ -89,7 +91,6 @@
       </ion-list>
     </div>
 
-    <!-- Aba Configurações (somente professor) -->
     <ng-container *ngSwitchCase="'config'">
       <div class="ion-padding" *ngIf="turma">
         <ion-card>

@@ -37,7 +37,7 @@ public class RespostaService {
     public RespostaAtividade submeterRespostas(Long alunoId, Long atividadeId,
             Map<Long, Object> respostasPorQuestao,
             Integer tempoGasto) {
-        
+
         Atividade atividade = atividadeRepository.findById(atividadeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Atividade não encontrada"));
 
@@ -46,7 +46,7 @@ public class RespostaService {
 
         // Verifica se o limite de tentativas foi excedido
         if (tentativasFeitas >= atividade.getTentativasMax()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, 
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Limite de " + atividade.getTentativasMax() + " tentativas excedido para esta atividade.");
         }
 
@@ -146,7 +146,11 @@ public class RespostaService {
                     break;
 
                 case DISSERTATIVA:
-                    rq.setRespostaTexto(respostaUsuario != null ? respostaUsuario.toString() : "");
+                    String resp = respostaUsuario != null ? respostaUsuario.toString().trim() : "";
+                    rq.setRespostaTexto(resp);
+                    boolean igual = resp
+                            .equalsIgnoreCase(q.getGabaritoTexto() != null ? q.getGabaritoTexto().trim() : "");
+                    rq.setAcerto(igual);
                     rq = respostaQuestaoRepository.save(rq);
                     break;
             }
@@ -169,8 +173,9 @@ public class RespostaService {
     public Double calcularNotaFinal(Long alunoId, Long atividadeId) {
         Atividade atividade = atividadeRepository.findById(atividadeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Atividade não encontrada"));
-        
-        List<RespostaAtividade> tentativas = respostaAtividadeRepository.findAllByIdAlunoAndIdAtividade(alunoId, atividadeId);
+
+        List<RespostaAtividade> tentativas = respostaAtividadeRepository.findAllByIdAlunoAndIdAtividade(alunoId,
+                atividadeId);
         if (tentativas.isEmpty()) {
             return 0.0;
         }
@@ -187,13 +192,16 @@ public class RespostaService {
     }
 
     public RespostaAtividade obterResultado(Long alunoId, Long atividadeId) {
-        return respostaAtividadeRepository.findFirstByIdAlunoAndIdAtividadeOrderByTentativaNumeroDesc(alunoId, atividadeId)
+        return respostaAtividadeRepository
+                .findFirstByIdAlunoAndIdAtividadeOrderByTentativaNumeroDesc(alunoId, atividadeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resposta não encontrada"));
     }
 
     private Long converterParaLong(Object obj) {
-        if (obj == null) return null;
-        if (obj instanceof Number) return ((Number) obj).longValue();
+        if (obj == null)
+            return null;
+        if (obj instanceof Number)
+            return ((Number) obj).longValue();
         if (obj instanceof String) {
             try {
                 return Long.parseLong((String) obj);
@@ -206,11 +214,13 @@ public class RespostaService {
 
     private List<Long> converterParaListaLong(Object obj) {
         List<Long> lista = new ArrayList<>();
-        if (obj == null) return lista;
+        if (obj == null)
+            return lista;
         if (obj instanceof List) {
             for (Object item : (List<?>) obj) {
                 Long valor = converterParaLong(item);
-                if (valor != null) lista.add(valor);
+                if (valor != null)
+                    lista.add(valor);
             }
         }
         return lista;
