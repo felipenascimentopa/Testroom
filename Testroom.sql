@@ -268,4 +268,4 @@ CREATE TABLE IF NOT EXISTS `Testroom`.`alternativa` (
     REFERENCES `Testroom`.`questao_fechada` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = InnoDB; 
