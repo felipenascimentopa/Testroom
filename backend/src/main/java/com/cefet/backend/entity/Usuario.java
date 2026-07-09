@@ -1,5 +1,7 @@
 package com.cefet.backend.entity;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -32,4 +34,8 @@ public class Usuario {
 
      @OneToOne(mappedBy = "usuario")
      private Professor professor;
+
+     @Enumerated(EnumType.STRING)
+     @Column(nullable = false)
+     private CargoUsuario cargo;
 }

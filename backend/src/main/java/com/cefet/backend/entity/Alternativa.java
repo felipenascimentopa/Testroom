@@ -27,12 +27,12 @@ public class Alternativa {
      private Long id;
 
      @ManyToOne
-     @JoinColumn(name = "questao_fechada")
+     @JoinColumn(name = "questao_fechada_id")
      private QuestaoFechada questaoFechada;
 
      @Column(nullable = false, length = 255)
      private String texto;
 
-     @Column(nullable = false, unique = false)
+     @Column(nullable = false, columnDefinition = "TINYINT(1)", unique = false)
      private Boolean verdadeira;
 }
