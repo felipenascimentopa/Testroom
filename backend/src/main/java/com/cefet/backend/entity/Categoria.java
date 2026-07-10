@@ -37,6 +37,9 @@ public class Categoria {
      @Column(nullable = true, length = 2000, unique = false)
      private String descricao;
 
+     @Column(nullable = false, length = 255, unique = false)
+     private String criado_por;
+
      @ManyToMany(mappedBy = "categorias")
      @JsonIgnore
      private Set<Professor> professores = new HashSet<>();
