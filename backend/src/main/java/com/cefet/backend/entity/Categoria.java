@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,8 +38,9 @@ public class Categoria {
      @Column(nullable = true, length = 2000, unique = false)
      private String descricao;
 
-     @Column(nullable = false, length = 255, unique = false)
-     private String criado_por;
+     @ManyToOne
+     @JoinColumn(name = "criador_id", nullable = false)
+     private Professor criador;
 
      @ManyToMany(mappedBy = "categorias")
      @JsonIgnore

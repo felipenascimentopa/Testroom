@@ -46,20 +46,6 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `Testroom`.`categoria`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `Testroom`.`categoria` ;
-
-CREATE TABLE IF NOT EXISTS `Testroom`.`categoria` (
-  `id` BIGINT NOT NULL AUTO_INCREMENT,
-  `nome` VARCHAR(255) NOT NULL,
-  `descricao` VARCHAR(2000) NULL DEFAULT NULL,
-  `criado_por` VARCHAR(255) NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `Testroom`.`questao`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `Testroom`.`questao` ;
@@ -69,26 +55,12 @@ CREATE TABLE IF NOT EXISTS `Testroom`.`questao` (
   `tipo_questao` ENUM('UNICA_ESCOLHA', 'MULTIPLA_ESCOLHA', 'DISCURSIVA', 'VERDADEIROFALSO') NOT NULL,
   `enunciado` VARCHAR(2000) NOT NULL,
   `criado_por` VARCHAR(255) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `Testroom`.`questao_aberta`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `Testroom`.`questao_aberta` ;
-
-CREATE TABLE IF NOT EXISTS `Testroom`.`questao_aberta` (
-  `id` BIGINT NOT NULL AUTO_INCREMENT,
-  `resposta_exemplo` VARCHAR(2000) NULL DEFAULT NULL,
-  `tamanho_min` INT(11) NULL DEFAULT NULL,
-  `tamanho_max` INT(11) NULL DEFAULT NULL,
-  `questao_id` BIGINT(20) NOT NULL,
+  `professor_id` BIGINT NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX `fk_discursiva_questao1_idx` (`questao_id` ASC) VISIBLE,
-  CONSTRAINT `fk_discursiva_questao1`
-    FOREIGN KEY (`questao_id`)
-    REFERENCES `Testroom`.`questao` (`id`)
+  INDEX `fk_questao_professor1_idx` (`professor_id` ASC) VISIBLE,
+  CONSTRAINT `fk_questao_professor1`
+    FOREIGN KEY (`professor_id`)
+    REFERENCES `Testroom`.`professor` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -148,6 +120,47 @@ CREATE TABLE IF NOT EXISTS `Testroom`.`atividade` (
   CONSTRAINT `fk_atividade_professor1`
     FOREIGN KEY (`professor_id`)
     REFERENCES `Testroom`.`professor` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Testroom`.`categoria`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Testroom`.`categoria` ;
+
+CREATE TABLE IF NOT EXISTS `Testroom`.`categoria` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(255) NOT NULL,
+  `descricao` VARCHAR(2000) NULL DEFAULT NULL,
+  `criador_id` BIGINT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_categoria_professor1_idx` (`criador_id` ASC) VISIBLE,
+  CONSTRAINT `fk_categoria_professor1`
+    FOREIGN KEY (`criador_id`)
+    REFERENCES `Testroom`.`professor` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Testroom`.`questao_aberta`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Testroom`.`questao_aberta` ;
+
+CREATE TABLE IF NOT EXISTS `Testroom`.`questao_aberta` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `resposta_exemplo` VARCHAR(2000) NULL DEFAULT NULL,
+  `tamanho_min` INT NULL DEFAULT NULL,
+  `tamanho_max` INT NULL DEFAULT NULL,
+  `questao_id` BIGINT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_discursiva_questao1_idx` (`questao_id` ASC) VISIBLE,
+  CONSTRAINT `fk_discursiva_questao1`
+    FOREIGN KEY (`questao_id`)
+    REFERENCES `Testroom`.`questao` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
