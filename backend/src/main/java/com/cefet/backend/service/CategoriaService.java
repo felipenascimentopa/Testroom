@@ -1,5 +1,7 @@
 package com.cefet.backend.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +42,30 @@ public class CategoriaService {
           return new CategoriaResponseDTO(categoriaRepository.save(categoria));
      }
 
-     
+     @Transactional
+     public List<CategoriaResponseDTO> listarPorCriador(Long professorId) {
+
+          Professor professor = professorRepository.findById(professorId)
+               .orElseThrow(() -> new ResourceNotFoundException("Professor não encontrado. Id: " + professorId));
+
+          List<Categoria> categorias = categoriaRepository.findByCriador(professor);
+          return categorias.stream().map(CategoriaResponseDTO::new).toList();
+     }
+
+     @Transactional
+     public void excluir(Long id, Long professorId) {
+
+          Professor professor = professorRepository.findById(professorId)
+               .orElseThrow(() -> new ResourceNotFoundException("Professor não encontrado. Id: " + professorId));
+
+          Categoria categoria = categoriaRepository.findById(id)
+               .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada. Id: " + id));
+
+          if (!categoria.getCriador().equals(professor)) {
+               throw new BusinessException("Apenas o criador de categoria pode excluí-la");
+          }
+
+          categoriaRepository.deleteById(id);
+     }
      
 }
