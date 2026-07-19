@@ -1,7 +1,0 @@
-{
-  "name": "Testroom",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "angular-standalone"
-}
