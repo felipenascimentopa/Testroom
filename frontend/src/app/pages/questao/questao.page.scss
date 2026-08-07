@@ -1,0 +1,67 @@
+.questao-list {
+  padding: 8px 0;
+}
+
+.questao-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--ion-border-color);
+
+  .questao-info {
+    flex: 1;
+
+    h3 {
+      margin: 0 0 6px;
+      font-weight: 500;
+      font-size: 1rem;
+      line-height: 1.4;
+      color: var(--ion-text-color);
+    }
+    .meta {
+      display: flex;
+      gap: 16px;
+      font-size: 0.8rem;
+      color: var(--ion-color-medium);
+
+      .pontos {
+        font-weight: 500;
+        color: var(--ion-color-secondary);
+      }
+    }
+    .categorias {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+
+      .categoria-tag {
+        background: var(--ion-border-color);
+        padding: 2px 12px;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        color: var(--ion-text-color);
+        border-radius: 0;
+      }
+    }
+  }
+
+  .questao-actions {
+    display: flex;
+    flex-shrink: 0;
+    margin-left: 12px;
+
+    ion-button {
+      --padding-start: 6px;
+      --padding-end: 6px;
+      --color: var(--ion-color-medium);
+      height: 32px;
+
+      &:hover {
+        --color: var(--ion-color-primary);
+      }
+    }
+  }
+}

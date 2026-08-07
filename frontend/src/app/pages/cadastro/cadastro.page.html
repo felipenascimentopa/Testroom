@@ -1,13 +1,32 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>cadastro</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="voltar()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Cadastro</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">cadastro</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <div class="cadastro-container">
+    <h2>Criar conta</h2>
+    <ion-item>
+      <ion-label position="floating">E-mail</ion-label>
+      <ion-input type="email" [(ngModel)]="usuario.email" required></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Senha</ion-label>
+      <ion-input type="password" [(ngModel)]="usuario.senha" required></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Cargo</ion-label>
+      <ion-select [(ngModel)]="usuario.cargo" interface="popover">
+        <ion-select-option value="PROFESSOR">Professor</ion-select-option>
+        <ion-select-option value="ESTUDANTE">Estudante</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-button expand="block" (click)="cadastrar()" [disabled]="!usuario.email || !usuario.senha">Cadastrar</ion-button>
+  </div>
 </ion-content>

@@ -1,11 +1,5 @@
 package com.cefet.backend.service;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.cefet.backend.dto.CategoriaRequestDTO;
 import com.cefet.backend.dto.CategoriaResponseDTO;
 import com.cefet.backend.entity.Categoria;
@@ -14,58 +8,134 @@ import com.cefet.backend.exception.BusinessException;
 import com.cefet.backend.exception.ResourceNotFoundException;
 import com.cefet.backend.repository.CategoriaRepository;
 import com.cefet.backend.repository.ProfessorRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class CategoriaService {
 
-     @Autowired
-     private CategoriaRepository categoriaRepository;
+    @Autowired
+    private CategoriaRepository categoriaRepository;
 
-     @Autowired
-     private ProfessorRepository professorRepository;
+    @Autowired
+    private ProfessorRepository professorRepository;
 
-     @Transactional
-     public CategoriaResponseDTO inserir(CategoriaRequestDTO dto, Long professorId) {
+    @Transactional
+    public CategoriaResponseDTO inserir(CategoriaRequestDTO dto, Long professorId) {
+        Professor professor = professorRepository.findById(professorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Professor não encontrado. Id: " + professorId));
 
-          Professor professor = professorRepository.findById(professorId)
-               .orElseThrow(() -> new ResourceNotFoundException("Professor não encontrado. Id: " + professorId));
+        if (categoriaRepository.existsByNomeAndCriador(dto.getNome(), professor)) {
+            throw new BusinessException("Já existe uma categoria com este nome criada por você.");
+        }
 
-          if (categoriaRepository.existsByNomeAndCriador(dto.getNome(), professor)) {
-               throw new BusinessException("Já existe uma categoria com ete nome cadastrada pelo professor encontrado!");
-          }
+        Categoria categoria = new Categoria();
+        categoria.setNome(dto.getNome());
+        categoria.setDescricao(dto.getDescricao());
+        categoria.setCriador(professor);
 
-          Categoria categoria = new Categoria();
-          categoria.setNome(dto.getNome());
-          categoria.setDescricao(dto.getDescricao());
-          categoria.setCriador(professor);
+        return new CategoriaResponseDTO(categoriaRepository.save(categoria));
+    }
 
-          return new CategoriaResponseDTO(categoriaRepository.save(categoria));
-     }
+    @Transactional(readOnly = true)
+    public List<CategoriaResponseDTO> listarAcessiveis(Long professorId) {
+        Professor professor = professorRepository.findById(professorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Professor não encontrado. Id: " + professorId));
 
-     @Transactional
-     public List<CategoriaResponseDTO> listarPorCriador(Long professorId) {
+        List<Categoria> categorias = categoriaRepository.findAllAcessiveis(professor);
+        return categorias.stream().map(CategoriaResponseDTO::new).toList();
+    }
 
-          Professor professor = professorRepository.findById(professorId)
-               .orElseThrow(() -> new ResourceNotFoundException("Professor não encontrado. Id: " + professorId));
+    @Transactional
+    public CategoriaResponseDTO buscarPorId(Long id) {
+        Categoria categoria = categoriaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada. Id: " + id));
+        return new CategoriaResponseDTO(categoria);
+    }
 
-          List<Categoria> categorias = categoriaRepository.findByCriador(professor);
-          return categorias.stream().map(CategoriaResponseDTO::new).toList();
-     }
+    @Transactional
+    public CategoriaResponseDTO atualizar(Long id, CategoriaRequestDTO dto, Long professorId) {
+        Professor professor = professorRepository.findById(professorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Professor não encontrado. Id: " + professorId));
 
-     @Transactional
-     public void excluir(Long id, Long professorId) {
+        Categoria categoria = categoriaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada. Id: " + id));
 
-          Professor professor = professorRepository.findById(professorId)
-               .orElseThrow(() -> new ResourceNotFoundException("Professor não encontrado. Id: " + professorId));
+        if (!categoria.getCriador().equals(professor)) {
+            throw new BusinessException("Apenas o criador pode editar a categoria.");
+        }
 
-          Categoria categoria = categoriaRepository.findById(id)
-               .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada. Id: " + id));
+        if (!categoria.getNome().equals(dto.getNome()) &&
+                categoriaRepository.existsByNomeAndCriador(dto.getNome(), professor)) {
+            throw new BusinessException("Já existe uma categoria com este nome para você.");
+        }
 
-          if (!categoria.getCriador().equals(professor)) {
-               throw new BusinessException("Apenas o criador de categoria pode excluí-la");
-          }
+        categoria.setNome(dto.getNome());
+        categoria.setDescricao(dto.getDescricao());
+        return new CategoriaResponseDTO(categoriaRepository.save(categoria));
+    }
 
-          categoriaRepository.deleteById(id);
-     }
-     
+    @Transactional
+    public void excluir(Long id, Long professorId) {
+        Professor professor = professorRepository.findById(professorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Professor não encontrado. Id: " + professorId));
+
+        Categoria categoria = categoriaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada. Id: " + id));
+
+        if (!categoria.getCriador().equals(professor)) {
+            throw new BusinessException("Apenas o criador pode excluir a categoria.");
+        }
+
+        categoriaRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void compartilhar(Long categoriaId, Long professorAlvoId, Long professorOrigemId) {
+        Categoria categoria = categoriaRepository.findById(categoriaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada. Id: " + categoriaId));
+
+        Professor origem = professorRepository.findById(professorOrigemId)
+                .orElseThrow(() -> new ResourceNotFoundException("Professor origem não encontrado."));
+
+        if (!categoria.getCriador().equals(origem)) {
+            throw new BusinessException("Apenas o criador pode compartilhar a categoria.");
+        }
+
+        Professor alvo = professorRepository.findById(professorAlvoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Professor alvo não encontrado."));
+
+        if (categoria.getCompartilhadaCom().contains(alvo)) {
+            throw new BusinessException("Categoria já compartilhada com este professor.");
+        }
+
+        categoria.getCompartilhadaCom().add(alvo);
+        categoriaRepository.save(categoria);
+    }
+
+    @Transactional
+    public void descompartilhar(Long categoriaId, Long professorAlvoId, Long professorOrigemId) {
+        Categoria categoria = categoriaRepository.findById(categoriaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada. Id: " + categoriaId));
+
+        Professor origem = professorRepository.findById(professorOrigemId)
+                .orElseThrow(() -> new ResourceNotFoundException("Professor origem não encontrado."));
+
+        if (!categoria.getCriador().equals(origem)) {
+            throw new BusinessException("Apenas o criador pode remover o compartilhamento.");
+        }
+
+        Professor alvo = professorRepository.findById(professorAlvoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Professor alvo não encontrado."));
+
+        if (!categoria.getCompartilhadaCom().contains(alvo)) {
+            throw new BusinessException("Categoria não está compartilhada com este professor.");
+        }
+
+        categoria.getCompartilhadaCom().remove(alvo);
+        categoriaRepository.save(categoria);
+    }
 }

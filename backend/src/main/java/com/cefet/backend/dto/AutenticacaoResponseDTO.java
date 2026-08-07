@@ -1,7 +1,7 @@
 package com.cefet.backend.dto;
 
+import com.cefet.backend.entity.CargoUsuario;
 import com.cefet.backend.entity.Usuario;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,14 +10,17 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class AutenticacaoResponseDTO {
+    private Long id;
+    private String email;
+    private CargoUsuario cargo;
+    private Long professorId;
+    private String professorNome;
+    private String foto;
 
-     private Long id;
-     private String email;
-     private String senha;
-
-     public AutenticacaoResponseDTO(Usuario usuario) {
-          this.id = usuario.getId();
-          this.email = usuario.getEmail();
-          this.senha = usuario.getSenha();
-     }
+    public AutenticacaoResponseDTO(Usuario usuario) {
+        this.id = usuario.getId();
+        this.email = usuario.getEmail();
+        this.cargo = usuario.getCargo();
+        
+    }
 }

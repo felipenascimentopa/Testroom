@@ -1,0 +1,69 @@
+.form-container {
+  max-width: 500px;
+  margin: 20px auto 0;
+
+  ion-item {
+    --border-color: transparent;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--ion-border-color);
+    padding-bottom: 4px;
+
+    &:focus-within {
+      border-bottom-color: var(--ion-color-secondary);
+    }
+  }
+
+  .alternativas-section {
+    margin: 24px 0 16px;
+    border-top: 1px solid var(--ion-border-color);
+    padding-top: 16px;
+
+    .section-title {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--ion-color-medium);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0 0 12px;
+    }
+
+    .alternativa-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+
+      ion-input {
+        flex: 1;
+        border-bottom: 1px solid var(--ion-border-color);
+        padding-bottom: 2px;
+      }
+
+      ion-checkbox {
+        --size: 20px;
+        --border-width: 1px;
+        margin: 0 4px;
+      }
+
+      ion-button {
+        --padding-start: 6px;
+        --padding-end: 6px;
+        --color: var(--ion-color-medium);
+        height: 32px;
+      }
+    }
+
+    .add-alt-btn {
+      --color: var(--ion-color-primary);
+      font-size: 0.9rem;
+      text-transform: none;
+      border: none;
+      padding-left: 0;
+      margin-top: 8px;
+    }
+  }
+
+  ion-button {
+    margin-top: 1.5rem;
+  }
+}

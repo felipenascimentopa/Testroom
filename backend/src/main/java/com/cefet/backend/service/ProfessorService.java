@@ -28,7 +28,8 @@ public class ProfessorService {
     @Transactional
     public ProfessorResponseDTO criar(ProfessorRequestDTO dto) {
         Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário com ID " + dto.getUsuarioId() + " não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Usuário com ID " + dto.getUsuarioId() + " não encontrado"));
 
         if (usuario.getProfessor() != null) {
             throw new BusinessException("Professor já cadastrado.");
@@ -63,7 +64,8 @@ public class ProfessorService {
 
         if (dto.getUsuarioId() != null && !dto.getUsuarioId().equals(professor.getUsuario().getId())) {
             Usuario novoUsuario = usuarioRepository.findById(dto.getUsuarioId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Usuário com ID " + dto.getUsuarioId() + " não encontrado"));
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Usuário com ID " + dto.getUsuarioId() + " não encontrado"));
             if (novoUsuario.getProfessor() != null && !novoUsuario.getProfessor().getId().equals(id)) {
                 throw new BusinessException("Este usuário já está vinculado a outro professor.");
             }
@@ -76,6 +78,14 @@ public class ProfessorService {
 
         professor = professorRepository.save(professor);
         return new ProfessorResponseDTO(professor);
+    }
+
+    @Transactional
+    public Professor atualizarNome(Long id, String nome) {
+        Professor professor = professorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Professor não encontrado"));
+        professor.setNome(nome);
+        return professorRepository.save(professor);
     }
 
     @Transactional

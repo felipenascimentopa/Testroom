@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="voltar()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Questões</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="adicionar()">
+        <ion-icon name="add"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="questao-list">
+    <div *ngFor="let q of questoes" class="questao-item">
+      <div class="questao-info">
+        <h3>{{ q.enunciado }}</h3>
+        <div class="meta">
+          <span>{{ q.tipoQuestao }}</span>
+          <span class="pontos">{{ q.valorPontos }} pts</span>
+        </div>
+        <div class="categorias" *ngIf="q.categorias?.length">
+          <span *ngFor="let cat of q.categorias" class="categoria-tag">{{ cat.nome }}</span>
+        </div>
+      </div>
+      <div class="questao-actions">
+        <ion-button fill="clear" (click)="editar(q.id!)">
+          <ion-icon name="create-outline"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" (click)="excluir(q.id!)">
+          <ion-icon name="trash-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+  </div>
+</ion-content>

@@ -1,21 +1,16 @@
 package com.cefet.backend.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.cefet.backend.dto.ProfessorRequestDTO;
 import com.cefet.backend.dto.ProfessorResponseDTO;
+import com.cefet.backend.entity.Professor;
 import com.cefet.backend.service.ProfessorService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,12 +46,34 @@ public class ProfessorController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/perfil")
+    @Operation(summary = "Obter perfil do professor logado")
+    public ResponseEntity<ProfessorResponseDTO> obterPerfil(@RequestParam Long professorId) {
+        ProfessorResponseDTO response = professorService.buscarPorId(professorId);
+        return ResponseEntity.ok(response);
+    }
+
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar um professor existente")
-    public ResponseEntity<ProfessorResponseDTO> atualizar(@PathVariable Long id, 
-                                                          @Valid @RequestBody ProfessorRequestDTO dto) {
+    public ResponseEntity<ProfessorResponseDTO> atualizar(@PathVariable Long id,
+            @Valid @RequestBody ProfessorRequestDTO dto) {
         ProfessorResponseDTO response = professorService.atualizar(id, dto);
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}/nome")
+    public ResponseEntity<Map<String, String>> atualizarNome(@PathVariable Long id,
+            @RequestBody Map<String, String> payload) {
+        String nome = payload.get("nome");
+        Professor professor = professorService.atualizarNome(id, nome);
+        return ResponseEntity.ok(Map.of("nome", professor.getNome()));
+    }
+
+    @PutMapping("/{id}/foto")
+    public ResponseEntity<Map<String, String>> atualizarFoto(@PathVariable Long id,
+            @RequestBody Map<String, String> payload) {
+        String fotoUrl = payload.get("fotoUrl");
+        return ResponseEntity.ok(Map.of("foto", fotoUrl));
     }
 
     @DeleteMapping("/{id}")

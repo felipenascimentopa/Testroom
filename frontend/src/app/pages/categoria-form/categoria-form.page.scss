@@ -1,0 +1,19 @@
+.form-container {
+  max-width: 400px;
+  margin: 30px auto 0;
+
+  ion-item {
+    --border-color: transparent;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--ion-border-color);
+    padding-bottom: 4px;
+
+    &:focus-within {
+      border-bottom-color: var(--ion-color-secondary);
+    }
+  }
+
+  ion-button {
+    margin-top: 2rem;
+  }
+}

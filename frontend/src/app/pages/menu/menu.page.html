@@ -1,13 +1,25 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>menu</ion-title>
+    <ion-title>Menu</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()" class="logout-btn">Sair</ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">menu</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <div class="menu-grid">
+    <div class="menu-card" (click)="irParaCategorias()">
+      <ion-icon name="folder-outline"></ion-icon>
+      <span>Categorias</span>
+    </div>
+    <div class="menu-card" (click)="irParaQuestoes()">
+      <ion-icon name="help-circle-outline"></ion-icon>
+      <span>Questões</span>
+    </div>
+    <div class="menu-card" (click)="irParaPerfil()">
+      <ion-icon name="person-outline"></ion-icon>
+      <span>Perfil</span>
+    </div>
+  </div>
 </ion-content>

@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="voltar()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="perfil-container">
+    <div class="avatar-section">
+      <ion-avatar class="profile-avatar" (click)="escolherFoto()">
+        <img [src]="getAvatarUrl()" alt="avatar" />
+        <div class="avatar-overlay">
+          <ion-icon name="camera-outline"></ion-icon>
+        </div>
+      </ion-avatar>
+      <div class="nome-section">
+        <div *ngIf="!editando" class="nome-display">
+          <h2>{{ professor.nome }}</h2>
+          <ion-button fill="clear" (click)="editando = true" class="edit-btn">
+            <ion-icon name="create-outline"></ion-icon>
+          </ion-button>
+        </div>
+        <div *ngIf="editando" class="nome-edit">
+          <ion-input [(ngModel)]="nomeEdit" placeholder="Novo nome" (keyup.enter)="salvarNome()"></ion-input>
+          <ion-button fill="clear" (click)="salvarNome()" [disabled]="carregando">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" (click)="editando = false; nomeEdit = professor.nome">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+      <p class="email">{{ professor.email }}</p>
+    </div>
+
+    <div class="id-section">
+      <span class="id-label">ID para compartilhamento</span>
+      <div class="id-box">
+        <span class="id-number">{{ professor.id }}</span>
+        <ion-button fill="clear" (click)="copiarId()" class="copy-btn">
+          <ion-icon name="copy-outline"></ion-icon>
+        </ion-button>
+      </div>
+      <p class="id-help">Compartilhe este número com outros professores</p>
+    </div>
+  </div>
+</ion-content>

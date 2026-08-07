@@ -1,0 +1,54 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="voltar()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit ? 'Editar Questão' : 'Nova Questão' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="form-container">
+    <ion-item>
+      <ion-label>Tipo</ion-label>
+      <ion-select [(ngModel)]="questao.tipoQuestao" interface="popover">
+        <ion-select-option *ngFor="let t of tiposQuestao" [value]="t">{{ t }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Enunciado</ion-label>
+      <ion-textarea [(ngModel)]="questao.enunciado" rows="4" required></ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Pontos</ion-label>
+      <ion-input type="number" [(ngModel)]="questao.valorPontos" step="0.5" min="0.5"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Categorias</ion-label>
+      <ion-select [(ngModel)]="questao.categoriaIds" multiple="true" placeholder="Selecione">
+        <ion-select-option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nome }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <div class="alternativas-section">
+      <p class="section-title">Alternativas</p>
+      <div *ngFor="let alt of questao.alternativas; let i = index" class="alternativa-row">
+        <ion-input [(ngModel)]="alt.texto" placeholder="Texto da alternativa"></ion-input>
+        <ion-checkbox [(ngModel)]="alt.verdadeira">V</ion-checkbox>
+        <ion-button fill="clear" (click)="removerAlternativa(i)">
+          <ion-icon name="close-outline"></ion-icon>
+        </ion-button>
+      </div>
+      <ion-button fill="clear" (click)="adicionarAlternativa()" class="add-alt-btn">+ Adicionar alternativa</ion-button>
+    </div>
+
+    <ion-button expand="block" (click)="salvar()" [disabled]="!questao.enunciado || questao.categoriaIds.length === 0">
+      Salvar
+    </ion-button>
+  </div>
+</ion-content>

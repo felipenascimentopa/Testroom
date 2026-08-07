@@ -1,6 +1,7 @@
 package com.cefet.backend.entity;
 
 public enum TipoQuestao {
-     ABERTA,
-     FECHADA
+    UNICA_ESCOLHA,
+    MULTIPLA_ESCOLHA,
+    VERDADEIROFALSO
 }

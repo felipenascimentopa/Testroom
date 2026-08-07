@@ -1,13 +1,38 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>categoria</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="voltar()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Categorias</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="adicionar()">
+        <ion-icon name="add"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">categoria</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <div class="categoria-list">
+    <div *ngFor="let cat of categorias" class="categoria-item" (click)="verQuestoes(cat.id!)">
+      <div class="categoria-info">
+        <h3>{{ cat.nome }}</h3>
+        <p *ngIf="cat.descricao">{{ cat.descricao }}</p>
+        <small *ngIf="cat.compartilhadaComIds?.length">Compartilhada</small>
+      </div>
+      <div class="categoria-actions">
+        <ion-button fill="clear" (click)="compartilhar(cat.id!, $event)" *ngIf="cat.criadorId === professorId">
+          <ion-icon name="share-social-outline"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" (click)="editar(cat.id!, $event)">
+          <ion-icon name="create-outline"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" (click)="excluir(cat.id!, $event)">
+          <ion-icon name="trash-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+  </div>
 </ion-content>

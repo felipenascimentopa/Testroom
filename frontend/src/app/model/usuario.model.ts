@@ -1,7 +1,9 @@
 export class UsuarioModel {
-     login: string;
-
-     constructor() {
-          this.login = "";
-     }
+    id?: number;
+    email: string = '';
+    senha?: string = '';
+    cargo: string = 'PROFESSOR';
+    professorId?: number;
+    professorNome?: string;
+    foto?: string; 
 }

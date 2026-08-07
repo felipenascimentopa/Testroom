@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CategoriaRequestDTO {
 
-     @NotBlank(message = "O campo login é obrigatório")
+     @NotBlank(message = "O campo nome é obrigatório")
      private String nome;
 
      private String descricao;
