@@ -3,10 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { QuestaoModel } from '../model/questao.model';
 import { AuthService } from './autenticacao.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class QuestaoService {
-    private apiUrl = 'http://localhost:8080/questoes';
+    private apiUrl = `${environment.apiUrl}/questoes`;
 
     constructor(private http: HttpClient, private auth: AuthService) { }
 
