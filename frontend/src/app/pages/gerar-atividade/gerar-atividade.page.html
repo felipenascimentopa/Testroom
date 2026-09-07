@@ -5,7 +5,7 @@
         <ion-icon name="arrow-back"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Gerar Atividade</ion-title>
+    <ion-title>Nova Atividade</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -22,17 +22,44 @@
     <ion-label position="floating">Instruções</ion-label>
     <ion-textarea [(ngModel)]="atividade.instrucoes"></ion-textarea>
   </ion-item>
+
   <ion-item>
-    <ion-label position="floating">Quantidade de Questões</ion-label>
-    <ion-input type="number" [(ngModel)]="atividade.quantidade" min="1"></ion-input>
-  </ion-item>
-  <ion-item>
-    <ion-label>Categorias (filtro)</ion-label>
-    <ion-select [(ngModel)]="atividade.categoriaIds" multiple="true" placeholder="Todas">
+    <ion-label>Categoria (filtro)</ion-label>
+    <ion-select [(ngModel)]="filtroCategoria" (ionChange)="carregarQuestoes()" placeholder="Todas">
       <ion-select-option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nome }}</ion-select-option>
     </ion-select>
   </ion-item>
-  <ion-button expand="block" (click)="gerar()" [disabled]="!atividade.titulo || !atividade.quantidade">
-    Gerar Atividade
+
+  <ion-list>
+    <ion-list-header>
+      <ion-label>Selecione as questões</ion-label>
+    </ion-list-header>
+    <ion-item *ngFor="let q of questoesDisponiveis">
+      <ion-checkbox slot="start" [(ngModel)]="q.selecionada" (ionChange)="atualizarSelecao(q)"></ion-checkbox>
+      <ion-label>
+        <h3>{{ q.enunciado }}</h3>
+        <p>{{ q.tipoQuestao }}</p>
+      </ion-label>
+      <ion-input
+        type="number"
+        slot="end"
+        [(ngModel)]="q.valorAtribuido"
+        [disabled]="!q.selecionada"
+        placeholder="Pontos"
+        min="0.5"
+        step="0.5"
+        style="width: 80px;"
+        *ngIf="q.selecionada">
+      </ion-input>
+    </ion-item>
+  </ion-list>
+
+  <ion-item>
+    <ion-label>Quantidade de versões</ion-label>
+    <ion-input type="number" [(ngModel)]="atividade.quantidadeVersoes" min="1" max="10"></ion-input>
+  </ion-item>
+
+  <ion-button expand="block" (click)="criar()" [disabled]="questoesSelecionadas.length === 0 || !atividade.titulo">
+    Criar Atividade
   </ion-button>
 </ion-content>

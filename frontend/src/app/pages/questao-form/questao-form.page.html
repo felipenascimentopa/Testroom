@@ -24,11 +24,6 @@
     </ion-item>
 
     <ion-item>
-      <ion-label position="floating">Pontos</ion-label>
-      <ion-input type="number" [(ngModel)]="questao.valorPontos" step="0.5" min="0.5"></ion-input>
-    </ion-item>
-
-    <ion-item>
       <ion-label>Categorias</ion-label>
       <ion-select [(ngModel)]="questao.categoriaIds" multiple="true" placeholder="Selecione">
         <ion-select-option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nome }}</ion-select-option>

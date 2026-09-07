@@ -31,7 +31,6 @@ public class QuestaoResponseDTO {
         this.tipoQuestao = questao.getTipoQuestao();
         this.enunciado = questao.getEnunciado();
         this.criadoPor = questao.getCriadoPor();
-        this.valorPontos = questao.getValorPontos();
         if (questao.getProfessor() != null) {
             this.professorId = questao.getProfessor().getId();
             this.professorNome = questao.getProfessor().getNome();
