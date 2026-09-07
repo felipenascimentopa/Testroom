@@ -28,7 +28,6 @@ CREATE TABLE questao (
     tipo_questao ENUM('UNICA_ESCOLHA', 'MULTIPLA_ESCOLHA', 'VERDADEIROFALSO') NOT NULL,
     enunciado VARCHAR(2000) NOT NULL,
     criado_por VARCHAR(255),
-    valor_pontos DECIMAL(3,2) NOT NULL,
     professor_id BIGINT NOT NULL,
     PRIMARY KEY (id),
     CONSTRAINT fk_questao_professor FOREIGN KEY (professor_id) REFERENCES professor(id)

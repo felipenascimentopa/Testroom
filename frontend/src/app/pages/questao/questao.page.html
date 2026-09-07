@@ -21,7 +21,6 @@
         <h3>{{ q.enunciado }}</h3>
         <div class="meta">
           <span>{{ q.tipoQuestao }}</span>
-          <span class="pontos">{{ q.valorPontos }} pts</span>
         </div>
         <div class="categorias" *ngIf="q.categorias?.length">
           <span *ngFor="let cat of q.categorias" class="categoria-tag">{{ cat.nome }}</span>

@@ -23,7 +23,6 @@ export class QuestaoFormPage implements OnInit {
   questao: QuestaoModel = {
     tipoQuestao: TipoQuestao.UNICA_ESCOLHA,
     enunciado: '',
-    valorPontos: 1.0,
     categoriaIds: [],
     alternativas: []
   };
@@ -133,7 +132,6 @@ export class QuestaoFormPage implements OnInit {
     const payload = {
       tipoQuestao: this.questao.tipoQuestao,
       enunciado: this.questao.enunciado,
-      valorPontos: this.questao.valorPontos,
       categoriaIds: this.questao.categoriaIds,
       alternativas: this.questao.alternativas
     };

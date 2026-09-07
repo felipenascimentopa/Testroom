@@ -20,7 +20,6 @@ public class QuestaoResponseDTO {
     private TipoQuestao tipoQuestao;
     private String enunciado;
     private String criadoPor;
-    private BigDecimal valorPontos;
     private Long professorId;
     private String professorNome;
     private List<CategoriaResponseDTO> categorias;
