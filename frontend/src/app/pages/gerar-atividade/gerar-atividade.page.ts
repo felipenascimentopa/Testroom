@@ -1,15 +1,45 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { 
+  IonContent, IonHeader, IonTitle, IonToolbar, 
+  IonButton, IonButtons, IonIcon, IonItem, IonLabel, 
+  IonInput, IonTextarea, IonSelect, IonSelectOption,
+  IonLoading, IonAlert
+} from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { AtividadeService } from '../../services/atividade.service';
 import { CategoriaService } from '../../services/categoria.service';
 import { AtividadeRequest } from '../../model/atividade.model';
 import { CategoriaModel } from '../../model/categoria.model';
 import { AlertController, LoadingController } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import { arrowBack } from 'ionicons/icons';
 
 @Component({
   selector: 'app-gerar-atividade',
   templateUrl: './gerar-atividade.page.html',
   styleUrls: ['./gerar-atividade.page.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    IonButton,
+    IonButtons,
+    IonIcon,
+    IonItem,
+    IonLabel,
+    IonInput,
+    IonTextarea,
+    IonSelect,
+    IonSelectOption,
+    IonLoading,
+    IonAlert
+  ]
 })
 export class GerarAtividadePage implements OnInit {
   atividade: AtividadeRequest = { titulo: '', quantidade: 1 };
@@ -21,7 +51,9 @@ export class GerarAtividadePage implements OnInit {
     private router: Router,
     private alertCtrl: AlertController,
     private loadingCtrl: LoadingController
-  ) {}
+  ) {
+    addIcons({ arrowBack });
+  }
 
   ngOnInit() {
     this.carregarCategorias();

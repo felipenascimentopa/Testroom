@@ -5,7 +5,7 @@ import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonButtons, Ion
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/autenticacao.service';
 import { addIcons } from 'ionicons';
-import { person } from 'ionicons/icons';
+import { folderOutline, helpCircleOutline, personOutline, documentTextOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-menu',
@@ -16,7 +16,7 @@ import { person } from 'ionicons/icons';
 })
 export class MenuPage {
   constructor(private authService: AuthService, private router: Router) {
-    addIcons({ person });
+    addIcons({ folderOutline, helpCircleOutline, personOutline, documentTextOutline });
   }
 
   irParaCategorias() {
@@ -25,6 +25,10 @@ export class MenuPage {
 
   irParaQuestoes() {
     this.router.navigate(['/questoes']);
+  }
+
+  irParaGerarAtividade() {
+    this.router.navigate(['/gerar-atividade']);
   }
 
   irParaPerfil() {

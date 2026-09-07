@@ -1,13 +1,33 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>visualizar-atividade</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="voltar()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Atividade</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="baixarPdf()">
+        <ion-icon name="download-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">visualizar-atividade</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding" *ngIf="atividade">
+  <h2>{{ atividade.titulo }}</h2>
+  <p *ngIf="atividade.descricao">{{ atividade.descricao }}</p>
+  <p><strong>Instruções:</strong> {{ atividade.instrucoes || 'Sem instruções' }}</p>
+  <p><strong>Total de pontos:</strong> {{ atividade.valorPontos }}</p>
+  <p><strong>Gerada em:</strong> {{ atividade.dataGeracao | date:'dd/MM/yyyy HH:mm' }}</p>
+
+  <div class="questoes">
+    <h3>Questões</h3>
+    <div *ngFor="let q of atividade.questoes" class="questao-card">
+      <p><strong>{{ q.posicao }}. {{ q.enunciado }}</strong> ({{ q.valorPontos }} pts)</p>
+      <ul>
+        <li *ngFor="let alt of q.alternativas">{{ alt.texto }}</li>
+      </ul>
+    </div>
+  </div>
 </ion-content>
