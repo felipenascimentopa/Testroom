@@ -1,0 +1,38 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="voltar()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Gerar Atividade</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-item>
+    <ion-label position="floating">Título</ion-label>
+    <ion-input [(ngModel)]="atividade.titulo"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">Descrição (opcional)</ion-label>
+    <ion-textarea [(ngModel)]="atividade.descricao"></ion-textarea>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">Instruções</ion-label>
+    <ion-textarea [(ngModel)]="atividade.instrucoes"></ion-textarea>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">Quantidade de Questões</ion-label>
+    <ion-input type="number" [(ngModel)]="atividade.quantidade" min="1"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Categorias (filtro)</ion-label>
+    <ion-select [(ngModel)]="atividade.categoriaIds" multiple="true" placeholder="Todas">
+      <ion-select-option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nome }}</ion-select-option>
+    </ion-select>
+  </ion-item>
+  <ion-button expand="block" (click)="gerar()" [disabled]="!atividade.titulo || !atividade.quantidade">
+    Gerar Atividade
+  </ion-button>
+</ion-content>

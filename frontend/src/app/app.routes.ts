@@ -39,4 +39,12 @@ export const routes: Routes = [
   path: 'perfil', 
   loadComponent: () => import('./pages/perfil/perfil.page').then(m => m.PerfilPage) 
 },
+  {
+    path: 'gerar-atividade',
+    loadComponent: () => import('./pages/gerar-atividade/gerar-atividade.page').then( m => m.GerarAtividadePage)
+  },
+  {
+    path: 'visualizar-atividade',
+    loadComponent: () => import('./pages/visualizar-atividade/visualizar-atividade.page').then( m => m.VisualizarAtividadePage)
+  },
 ];
