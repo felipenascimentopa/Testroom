@@ -32,15 +32,6 @@ public class AtividadeController {
     @Autowired
     private PdfService pdfService;
 
-    @PostMapping("/gerar")
-    @Operation(summary = "Gerar uma nova atividade (prova) com questões selecionadas e embaralhadas")
-    public ResponseEntity<AtividadeResponseDTO> gerarAtividade(
-            @Valid @RequestBody AtividadeRequestDTO dto,
-            @RequestParam Long professorId) {
-        Atividade atividade = atividadeService.gerarAtividade(dto, professorId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new AtividadeResponseDTO(atividade));
-    }
-
     @GetMapping("/{id}/pdf")
     @Operation(summary = "Exportar atividade para PDF")
     public ResponseEntity<byte[]> exportarPdf(@PathVariable Long id) throws IOException {

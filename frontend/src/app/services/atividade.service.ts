@@ -12,11 +12,6 @@ export class AtividadeService {
 
   constructor(private http: HttpClient, private auth: AuthService) { }
 
-  gerar(atividade: AtividadeRequest): Observable<AtividadeResponse> {
-    const professorId = this.auth.getProfessorId();
-    return this.http.post<AtividadeResponse>(`${this.apiUrl}/gerar?professorId=${professorId}`, atividade);
-  }
-
   exportarPdf(id: number): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/${id}/pdf`, { responseType: 'blob' });
   }
@@ -28,5 +23,5 @@ export class AtividadeService {
   criarComQuestoes(dto: AtividadeComQuestoesRequest): Observable<AtividadeResponse[]> {
     const professorId = this.auth.getProfessorId();
     return this.http.post<AtividadeResponse[]>(`${this.apiUrl}/criar-com-questoes?professorId=${professorId}`, dto);
-}
+  }
 }

@@ -92,54 +92,66 @@ public class AtividadeService {
     }
 
     @Transactional
-public List<Atividade> criarAtividadeComQuestoes(AtividadeComQuestoesRequestDTO dto, Long professorId) {
-    Professor professor = professorRepository.findById(professorId)
-            .orElseThrow(() -> new ResourceNotFoundException("Professor não encontrado"));
+    public List<Atividade> criarAtividadeComQuestoes(AtividadeComQuestoesRequestDTO dto, Long professorId) {
+        Professor professor = professorRepository.findById(professorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Professor não encontrado"));
 
-    if (dto.getQuestoes() == null || dto.getQuestoes().isEmpty()) {
-        throw new BusinessException("Selecione pelo menos uma questão.");
-    }
-
-    List<Long> questaoIds = dto.getQuestoes().stream()
-            .map(AtividadeComQuestoesRequestDTO.QuestaoSelecionadaDTO::getQuestaoId)
-            .collect(Collectors.toList());
-    List<Questao> questoes = questaoRepository.findAllById(questaoIds);
-    for (Questao q : questoes) {
-        if (!q.getProfessor().equals(professor) && !q.getProfessor().getCategoriasCompartilhadas().contains(professor)) {
-            throw new BusinessException("Questão " + q.getId() + " não pertence a você e não foi compartilhada.");
+        if (dto.getQuestoes() == null || dto.getQuestoes().isEmpty()) {
+            throw new BusinessException("Selecione pelo menos uma questão.");
         }
-    }
 
-    List<Atividade> versoes = new ArrayList<>();
-    for (int v = 1; v <= dto.getQuantidadeVersoes(); v++) {
-        Atividade atividade = new Atividade();
-        atividade.setTitulo(dto.getTitulo() + " (Versão " + v + ")");
-        atividade.setDescricao(dto.getDescricao());
-        atividade.setInstrucoes(dto.getInstrucoes());
-        atividade.setProfessor(professor);
-        atividade.setDataGeracao(LocalDateTime.now());
-        atividade.setQuantidadeVersoes(dto.getQuantidadeVersoes());
-        atividade = atividadeRepository.save(atividade);
+        List<Long> questaoIds = dto.getQuestoes().stream()
+                .map(AtividadeComQuestoesRequestDTO.QuestaoSelecionadaDTO::getQuestaoId)
+                .collect(Collectors.toList());
+        List<Questao> questoes = questaoRepository.findAllById(questaoIds);
 
-        List<AtividadeComQuestoesRequestDTO.QuestaoSelecionadaDTO> questoesEmbaralhadas = new ArrayList<>(dto.getQuestoes());
-        Collections.shuffle(questoesEmbaralhadas);
-
-        List<QuestaoAtividade> lista = new ArrayList<>();
-        int pos = 1;
-        for (AtividadeComQuestoesRequestDTO.QuestaoSelecionadaDTO sel : questoesEmbaralhadas) {
-            Questao q = questoes.stream().filter(qq -> qq.getId().equals(sel.getQuestaoId())).findFirst().orElseThrow();
-            QuestaoAtividade qa = new QuestaoAtividade();
-            qa.setAtividade(atividade);
-            qa.setQuestao(q);
-            qa.setPosicao(pos++);
-            qa.setValorPontos(BigDecimal.valueOf(sel.getValorPontos()));
-            lista.add(qa);
+        for (Questao q : questoes) {
+            boolean acessivel = q.getProfessor().equals(professor) ||
+                    q.getCategorias().stream().anyMatch(cat -> cat.getCompartilhadaCom().contains(professor));
+            if (!acessivel) {
+                throw new BusinessException("Questão " + q.getId() + " não pertence a você e não foi compartilhada.");
+            }
         }
-        questaoAtividadeRepository.saveAll(lista);
-        atividade.setQuestoes(lista);
-        versoes.add(atividade);
-    }
 
-    return versoes;
-}
+        List<Atividade> versoes = new ArrayList<>();
+        for (int v = 1; v <= dto.getQuantidadeVersoes(); v++) {
+            Atividade atividade = new Atividade();
+            atividade.setTitulo(dto.getTitulo() + " (Versão " + v + ")");
+            atividade.setDescricao(dto.getDescricao());
+            atividade.setInstrucoes(dto.getInstrucoes());
+            atividade.setProfessor(professor);
+            atividade.setDataGeracao(LocalDateTime.now());
+            atividade.setQuantidadeVersoes(dto.getQuantidadeVersoes());
+            atividade = atividadeRepository.save(atividade);
+
+            List<AtividadeComQuestoesRequestDTO.QuestaoSelecionadaDTO> questoesEmbaralhadas = new ArrayList<>(
+                    dto.getQuestoes());
+            Collections.shuffle(questoesEmbaralhadas);
+
+            List<QuestaoAtividade> lista = new ArrayList<>();
+            int pos = 1;
+            for (AtividadeComQuestoesRequestDTO.QuestaoSelecionadaDTO sel : questoesEmbaralhadas) {
+                Questao q = questoes.stream().filter(qq -> qq.getId().equals(sel.getQuestaoId())).findFirst()
+                        .orElseThrow();
+                QuestaoAtividade qa = new QuestaoAtividade();
+                qa.setAtividade(atividade);
+                qa.setQuestao(q);
+                qa.setPosicao(pos++);
+                qa.setValorPontos(BigDecimal.valueOf(sel.getValorPontos()));
+                lista.add(qa);
+            }
+            questaoAtividadeRepository.saveAll(lista);
+            atividade.setQuestoes(lista);
+
+            BigDecimal total = lista.stream()
+                    .map(QuestaoAtividade::getValorPontos)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            atividade.setValorPontos(total);
+            atividade = atividadeRepository.save(atividade); 
+
+            versoes.add(atividade);
+        }
+
+        return versoes;
+    }
 }
