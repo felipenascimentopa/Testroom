@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { 
-  IonContent, IonHeader, IonTitle, IonToolbar, 
+import {
+  IonContent, IonHeader, IonTitle, IonToolbar,
   IonButton, IonButtons, IonIcon, IonLoading, IonAlert
 } from '@ionic/angular/standalone';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -97,6 +97,33 @@ export class VisualizarAtividadePage implements OnInit {
         const alert = await this.alertCtrl.create({
           header: 'Erro',
           message: 'Falha ao gerar PDF.',
+          buttons: ['OK']
+        });
+        await alert.present();
+      }
+    });
+  }
+
+  async baixarGabarito() {
+    if (!this.atividadeId) return;
+    const loading = await this.loadingCtrl.create({ message: 'Gerando gabarito...' });
+    await loading.present();
+
+    this.atividadeService.exportarGabarito(this.atividadeId).subscribe({
+      next: (blob) => {
+        loading.dismiss();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `gabarito_${this.atividadeId}.pdf`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: async () => {
+        loading.dismiss();
+        const alert = await this.alertCtrl.create({
+          header: 'Erro',
+          message: 'Falha ao gerar gabarito.',
           buttons: ['OK']
         });
         await alert.present();

@@ -13,7 +13,7 @@ import { AlertController, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { 
   arrowBack, copyOutline, personOutline, mailOutline, idCardOutline, 
-  checkmarkCircle, createOutline, closeOutline, cameraOutline
+  checkmarkCircle, checkmarkCircleOutline, createOutline, closeOutline, cameraOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -24,7 +24,7 @@ import {
   imports: [
     IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonButtons, 
     IonIcon, IonLabel, IonItem, IonAvatar, IonInput, IonModal,
-    IonText, IonSpinner,
+    IonText, IonSpinner, 
     CommonModule, FormsModule
   ]
 })
@@ -41,11 +41,10 @@ export class PerfilPage implements OnInit {
     private router: Router,
     private toastController: ToastController,
     private alertController: AlertController
-    // Removido ModalController - não usado
   ) {
     addIcons({ 
       arrowBack, copyOutline, personOutline, mailOutline, idCardOutline, 
-      checkmarkCircle, createOutline, closeOutline, cameraOutline
+      checkmarkCircle, createOutline, closeOutline, cameraOutline, checkmarkCircleOutline
     });
   }
 
@@ -54,7 +53,6 @@ export class PerfilPage implements OnInit {
   }
 
   carregarPerfil() {
-    // Primeiro, carrega do localStorage (fallback rápido)
     const usuario = this.authService.getUsuario();
     if (usuario) {
       this.professor.nome = usuario.professorNome || 'Professor';
@@ -64,12 +62,10 @@ export class PerfilPage implements OnInit {
       this.nomeEdit = this.professor.nome;
     }
 
-    // Depois, busca os dados mais atualizados do backend
     this.professorService.obterPerfil().subscribe({
       next: (data) => {
         this.professor = data;
         this.nomeEdit = data.nome;
-        // Atualiza o localStorage
         const usuario = this.authService.getUsuario();
         if (usuario) {
           usuario.professorNome = data.nome;

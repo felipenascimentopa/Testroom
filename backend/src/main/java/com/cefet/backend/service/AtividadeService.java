@@ -2,6 +2,8 @@ package com.cefet.backend.service;
 
 import com.cefet.backend.dto.AtividadeComQuestoesRequestDTO;
 import com.cefet.backend.dto.AtividadeRequestDTO;
+import com.cefet.backend.dto.AtividadeResumoDTO;
+import com.cefet.backend.entity.Alternativa;
 import com.cefet.backend.entity.Atividade;
 import com.cefet.backend.entity.Professor;
 import com.cefet.backend.entity.Questao;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -105,6 +108,10 @@ public class AtividadeService {
                 .collect(Collectors.toList());
         List<Questao> questoes = questaoRepository.findAllById(questaoIds);
 
+        if (questoes.size() != questaoIds.size()) {
+            throw new BusinessException("Alguma questão informada não existe.");
+        }
+
         for (Questao q : questoes) {
             boolean acessivel = q.getProfessor().equals(professor) ||
                     q.getCategorias().stream().anyMatch(cat -> cat.getCompartilhadaCom().contains(professor));
@@ -113,15 +120,25 @@ public class AtividadeService {
             }
         }
 
+        String grupoId = UUID.randomUUID().toString();
+
+        int qtdVersoes = dto.getQuantidadeVersoes() != null && dto.getQuantidadeVersoes() > 0
+                ? dto.getQuantidadeVersoes()
+                : 1;
+
         List<Atividade> versoes = new ArrayList<>();
-        for (int v = 1; v <= dto.getQuantidadeVersoes(); v++) {
+        for (int v = 1; v <= qtdVersoes; v++) {
             Atividade atividade = new Atividade();
-            atividade.setTitulo(dto.getTitulo() + " (Versão " + v + ")");
+            atividade.setTitulo(qtdVersoes > 1
+                    ? dto.getTitulo() + " (Versão " + v + ")"
+                    : dto.getTitulo());
             atividade.setDescricao(dto.getDescricao());
             atividade.setInstrucoes(dto.getInstrucoes());
             atividade.setProfessor(professor);
             atividade.setDataGeracao(LocalDateTime.now());
-            atividade.setQuantidadeVersoes(dto.getQuantidadeVersoes());
+            atividade.setQuantidadeVersoes(qtdVersoes);
+            atividade.setGrupoId(grupoId);
+            atividade.setValorPontos(BigDecimal.ZERO);
             atividade = atividadeRepository.save(atividade);
 
             List<AtividadeComQuestoesRequestDTO.QuestaoSelecionadaDTO> questoesEmbaralhadas = new ArrayList<>(
@@ -131,13 +148,27 @@ public class AtividadeService {
             List<QuestaoAtividade> lista = new ArrayList<>();
             int pos = 1;
             for (AtividadeComQuestoesRequestDTO.QuestaoSelecionadaDTO sel : questoesEmbaralhadas) {
-                Questao q = questoes.stream().filter(qq -> qq.getId().equals(sel.getQuestaoId())).findFirst()
-                        .orElseThrow();
+                Questao q = questoes.stream()
+                        .filter(qq -> qq.getId().equals(sel.getQuestaoId()))
+                        .findFirst()
+                        .orElseThrow(() -> new BusinessException("Questão não encontrada: " + sel.getQuestaoId()));
+
                 QuestaoAtividade qa = new QuestaoAtividade();
                 qa.setAtividade(atividade);
                 qa.setQuestao(q);
                 qa.setPosicao(pos++);
-                qa.setValorPontos(BigDecimal.valueOf(sel.getValorPontos()));
+                qa.setValorPontos(sel.getValorPontos() != null
+                        ? sel.getValorPontos()
+                        : BigDecimal.ONE);
+
+                List<Long> altIds = q.getAlternativas().stream()
+                        .map(Alternativa::getId)
+                        .collect(Collectors.toList());
+                Collections.shuffle(altIds);
+                qa.setOrdemAlternativas(altIds.stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.joining(",")));
+
                 lista.add(qa);
             }
             questaoAtividadeRepository.saveAll(lista);
@@ -147,11 +178,29 @@ public class AtividadeService {
                     .map(QuestaoAtividade::getValorPontos)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             atividade.setValorPontos(total);
-            atividade = atividadeRepository.save(atividade); 
+            atividade = atividadeRepository.save(atividade);
 
             versoes.add(atividade);
+
         }
 
         return versoes;
+    }
+
+    @Transactional(readOnly = true)
+    public List<AtividadeResumoDTO> listarPorProfessor(Long professorId) {
+        Professor professor = professorRepository.findById(professorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Professor não encontrado"));
+        return atividadeRepository.findByProfessorOrderByDataGeracaoDesc(professor).stream()
+                .map(AtividadeResumoDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void excluir(Long id) {
+        if (!atividadeRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Atividade não encontrada. Id: " + id);
+        }
+        atividadeRepository.deleteById(id);
     }
 }

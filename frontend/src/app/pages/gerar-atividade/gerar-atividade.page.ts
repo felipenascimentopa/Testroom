@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { 
-  IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonButtons, 
-  IonIcon, IonItem, IonLabel, IonInput, IonTextarea, IonSelect, 
+import {
+  IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonButtons,
+  IonIcon, IonItem, IonLabel, IonInput, IonTextarea, IonSelect,
   IonSelectOption, IonList, IonListHeader, IonCheckbox, IonLoading, IonAlert
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
@@ -54,7 +54,7 @@ export class GerarAtividadePage implements OnInit {
     quantidadeVersoes: 1
   };
   categorias: CategoriaModel[] = [];
-  filtroCategoria: number | null = null;
+  filtroCategorias: number[] = [];
   questoesDisponiveis: (QuestaoModel & { selecionada: boolean; valorAtribuido: number })[] = [];
   questoesSelecionadas: QuestaoSelecionada[] = [];
 
@@ -79,16 +79,27 @@ export class GerarAtividadePage implements OnInit {
   }
 
   carregarQuestoes() {
-    const obs = this.filtroCategoria
-      ? this.questaoService.listarPorCategoria(this.filtroCategoria)
+    const obs = (this.filtroCategorias && this.filtroCategorias.length > 0)
+      ? this.questaoService.listarPorCategorias(this.filtroCategorias)
       : this.questaoService.listar();
+
     obs.subscribe(data => {
       this.questoesDisponiveis = data.map(q => ({
         ...q,
         selecionada: false,
         valorAtribuido: 1.0
       }));
+      this.questoesSelecionadas = [];
     });
+  }
+
+  sanitizarPontos(q: any) {
+    const n = Number(q.valorAtribuido);
+    if (!isFinite(n) || n <= 0) {
+      q.valorAtribuido = 1.0;
+    } else {
+      q.valorAtribuido = Math.round(n * 100) / 100;
+    }
   }
 
   atualizarSelecao(q: any) {
@@ -98,7 +109,6 @@ export class GerarAtividadePage implements OnInit {
         valorPontos: q.valorAtribuido
       });
     } else {
-      // Remove
       this.questoesSelecionadas = this.questoesSelecionadas.filter(
         item => item.questaoId !== q.id
       );
@@ -123,13 +133,24 @@ export class GerarAtividadePage implements OnInit {
         valorPontos: q.valorAtribuido
       }));
 
+    const selecionadas = this.questoesDisponiveis
+      .filter(q => q.selecionada)
+      .map(q => {
+        const pontos = Number(q.valorAtribuido);
+        return {
+          questaoId: q.id!,
+          valorPontos: isFinite(pontos) && pontos > 0 ? Math.round(pontos * 100) / 100 : 1.0
+        };
+      });
+
     const payload: AtividadeComQuestoesRequest = {
       titulo: this.atividade.titulo,
       descricao: this.atividade.descricao,
       instrucoes: this.atividade.instrucoes,
-      questoes: this.questoesSelecionadas,
-      quantidadeVersoes: this.atividade.quantidadeVersoes
+      questoes: selecionadas,
+      quantidadeVersoes: this.atividade.quantidadeVersoes || 1
     };
+
 
     const loading = await this.loadingCtrl.create({ message: 'Criando atividade...' });
     await loading.present();
@@ -140,9 +161,10 @@ export class GerarAtividadePage implements OnInit {
         if (versoes && versoes.length > 0) {
           this.router.navigate(['/visualizar-atividade', versoes[0].id]);
         } else {
-          this.router.navigate(['/menu']);
+          this.router.navigate(['/atividades']);
         }
       },
+
       error: async (err) => {
         loading.dismiss();
         const alert = await this.alertCtrl.create({

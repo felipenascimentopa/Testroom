@@ -47,4 +47,8 @@ export const routes: Routes = [
     path: 'visualizar-atividade/:id',
     loadComponent: () => import('./pages/visualizar-atividade/visualizar-atividade.page').then( m => m.VisualizarAtividadePage)
   },
+  {
+    path: 'atividades',
+    loadComponent: () => import('./pages/atividades/atividades.page').then( m => m.AtividadesPage)
+  },
 ];

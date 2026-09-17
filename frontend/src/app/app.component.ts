@@ -4,11 +4,11 @@ import { addIcons } from 'ionicons';
 import { 
   arrowBack, add, createOutline, trashOutline, shareSocialOutline,
   folderOutline, helpCircleOutline, personOutline, copyOutline,
-  closeOutline
+  closeOutline, downloadOutline, keyOutline, listOutline 
 } from 'ionicons/icons';
 
 addIcons({ arrowBack, add, createOutline, trashOutline, shareSocialOutline,
-  folderOutline, helpCircleOutline, personOutline, copyOutline, closeOutline });
+  folderOutline, helpCircleOutline, personOutline, copyOutline, closeOutline, downloadOutline, keyOutline, listOutline });
 
 @Component({
   selector: 'app-root',

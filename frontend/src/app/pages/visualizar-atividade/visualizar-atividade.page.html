@@ -7,7 +7,10 @@
     </ion-buttons>
     <ion-title>Atividade</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="baixarPdf()">
+      <ion-button (click)="baixarGabarito()" title="Baixar gabarito">
+        <ion-icon name="key-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="baixarPdf()" title="Baixar prova">
         <ion-icon name="download-outline"></ion-icon>
       </ion-button>
     </ion-buttons>

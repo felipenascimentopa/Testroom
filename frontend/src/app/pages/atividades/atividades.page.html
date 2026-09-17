@@ -1,0 +1,53 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="voltar()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Minhas Atividades</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="adicionar()">
+        <ion-icon name="add"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="grupos.length === 0" class="vazio">
+    <p>Nenhuma atividade criada ainda.</p>
+  </div>
+
+  <div *ngFor="let g of grupos" class="grupo-card">
+    <div class="grupo-header">
+      <div>
+        <h2>{{ getTituloGrupo(g) }}</h2>
+        <span class="meta">{{ g.versoes.length }} versão(ões) ·
+          {{ g.versoes[0].quantidadeQuestoes }} questões</span>
+      </div>
+      <ion-button fill="clear" color="danger" (click)="excluirGrupo(g)">
+        <ion-icon name="trash-outline"></ion-icon>
+      </ion-button>
+    </div>
+
+    <div *ngFor="let v of g.versoes" class="versao-row">
+      <div class="versao-info">
+        <span class="versao-titulo">{{ v.titulo }}</span>
+        <span class="versao-meta">{{ v.valorPontos }} pts ·
+          {{ v.dataGeracao | date:'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+      <div class="versao-actions">
+        <ion-button fill="clear" (click)="visualizar(v)" title="Visualizar">
+          <ion-icon name="eye-outline"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" (click)="baixarPdf(v)" title="Baixar prova">
+          <ion-icon name="download-outline"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" color="warning" (click)="baixarGabarito(v)" title="Baixar gabarito">
+          <ion-icon name="key-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+  </div>
+</ion-content>

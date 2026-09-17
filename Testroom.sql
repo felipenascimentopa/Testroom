@@ -84,6 +84,7 @@ CREATE TABLE questao_atividade (
     valor_pontos DECIMAL(5,2) NOT NULL,
     questao_id BIGINT NOT NULL,
     atividade_id BIGINT NOT NULL,
+    ordem_alternativas VARCHAR(500),
     PRIMARY KEY (id),
     CONSTRAINT fk_questao_atividade_questao FOREIGN KEY (questao_id) REFERENCES questao(id) ON DELETE CASCADE,
     CONSTRAINT fk_questao_atividade_atividade FOREIGN KEY (atividade_id) REFERENCES atividade(id) ON DELETE CASCADE

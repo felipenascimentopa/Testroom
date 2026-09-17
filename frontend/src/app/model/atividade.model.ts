@@ -30,3 +30,13 @@ export interface AlternativaVisualizacao {
     id: number;
     texto: string;
 }
+
+export interface AtividadeResumo {
+  id: number;
+  titulo: string;
+  valorPontos: number;
+  dataGeracao: string;
+  quantidadeVersoes: number;
+  grupoId?: string | null;
+  quantidadeQuestoes: number;
+}

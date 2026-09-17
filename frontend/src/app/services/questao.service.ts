@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { QuestaoModel } from '../model/questao.model';
 import { AuthService } from './autenticacao.service';
 import { environment } from '../../environments/environment';
+import { HttpParams } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class QuestaoService {
@@ -34,6 +35,21 @@ export class QuestaoService {
     listarPorCategoria(categoriaId: number): Observable<QuestaoModel[]> {
         const professorId = this.getProfessorId();
         return this.http.get<QuestaoModel[]>(`${this.apiUrl}/por-categoria?categoriaId=${categoriaId}&professorId=${professorId}`);
+    }
+
+    listarPorCategorias(categoriaIds: number[]): Observable<QuestaoModel[]> {
+        const professorId = this.getProfessorId();
+        if (!categoriaIds || categoriaIds.length === 0) {
+            return this.listar();
+        }
+
+        let params = new HttpParams();
+        params = params.set('professorId', professorId.toString());
+        categoriaIds.forEach(id => {
+            params = params.append('categoriaIds', id.toString());
+        });
+
+        return this.http.get<QuestaoModel[]>(`${this.apiUrl}/por-categorias`, { params });
     }
 
     atualizar(id: number, questao: QuestaoModel): Observable<QuestaoModel> {

@@ -1,0 +1,66 @@
+.grupo-card {
+  border: 1px solid var(--ion-border-color);
+  background: var(--ion-card-background);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.grupo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--ion-border-color);
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+
+  h2 {
+    margin: 0 0 4px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--ion-text-color);
+  }
+
+  .meta {
+    font-size: 0.8rem;
+    color: var(--ion-color-medium);
+  }
+}
+
+.versao-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+
+  .versao-info {
+    display: flex;
+    flex-direction: column;
+
+    .versao-titulo {
+      font-size: 0.95rem;
+      color: var(--ion-text-color);
+    }
+    .versao-meta {
+      font-size: 0.75rem;
+      color: var(--ion-color-medium);
+      margin-top: 2px;
+    }
+  }
+
+  .versao-actions {
+    display: flex;
+    gap: 2px;
+
+    ion-button {
+      --padding-start: 6px;
+      --padding-end: 6px;
+      height: 32px;
+    }
+  }
+}
+
+.vazio {
+  text-align: center;
+  color: var(--ion-color-medium);
+  margin-top: 40px;
+}
