@@ -5,48 +5,132 @@
         <ion-icon name="arrow-back"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Perfil</ion-title>
+    <ion-title>{{ modoProprio ? 'Meu Perfil' : 'Perfil do Professor' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <div class="perfil-container">
-    <div class="avatar-section">
-      <ion-avatar class="profile-avatar" (click)="escolherFoto()">
-        <img [src]="getAvatarUrl()" alt="avatar" />
-        <div class="avatar-overlay">
-          <ion-icon name="camera-outline"></ion-icon>
-        </div>
+<ion-content class="ion-padding perfil-content">
+
+  <div *ngIf="carregando && !modoProprio" class="loading-wrapper">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Carregando perfil...</p>
+  </div>
+
+  <div class="perfil-container" *ngIf="!carregando || modoProprio">
+
+    <div class="avatar-wrapper">
+      <ion-avatar class="perfil-avatar" (click)="modoProprio && escolherFoto()">
+        <img [src]="professor.foto || getAvatarUrl()" alt="Foto de perfil" />
+        <ion-icon
+          *ngIf="modoProprio"
+          name="camera-outline"
+          class="camera-badge">
+        </ion-icon>
       </ion-avatar>
-      <div class="nome-section">
-        <div *ngIf="!editando" class="nome-display">
-          <h2>{{ professor.nome }}</h2>
-          <ion-button fill="clear" (click)="editando = true" class="edit-btn">
-            <ion-icon name="create-outline"></ion-icon>
-          </ion-button>
-        </div>
-        <div *ngIf="editando" class="nome-edit">
-          <ion-input [(ngModel)]="nomeEdit" placeholder="Novo nome" (keyup.enter)="salvarNome()"></ion-input>
-          <ion-button fill="clear" (click)="salvarNome()" [disabled]="carregando">
-            <ion-icon name="checkmark-circle-outline"></ion-icon>
-          </ion-button>
-          <ion-button fill="clear" (click)="editando = false; nomeEdit = professor.nome">
-            <ion-icon name="close-outline"></ion-icon>
-          </ion-button>
-        </div>
+
+      <div class="nome-wrapper">
+        <h2 class="perfil-nome">{{ professor.nome || 'Professor' }}</h2>
+        <ion-note *ngIf="!modoProprio" color="medium">
+          <ion-icon name="person-outline"></ion-icon>
+          Visualizando perfil de outro professor
+        </ion-note>
       </div>
-      <p class="email">{{ professor.email }}</p>
     </div>
 
-    <div class="id-section">
-      <span class="id-label">ID para compartilhamento</span>
-      <div class="id-box">
-        <span class="id-number">{{ professor.id }}</span>
-        <ion-button fill="clear" (click)="copiarId()" class="copy-btn">
-          <ion-icon name="copy-outline"></ion-icon>
+    <div *ngIf="modoProprio" class="edit-nome-wrapper">
+      <div *ngIf="!editando" class="nome-display">
+        <span>{{ professor.nome }}</span>
+        <ion-button fill="clear" size="small" (click)="editando = true; nomeEdit = professor.nome">
+          <ion-icon slot="icon-only" name="create-outline"></ion-icon>
         </ion-button>
       </div>
-      <p class="id-help">Compartilhe este número com outros professores</p>
+
+      <div *ngIf="editando" class="nome-edit">
+        <ion-item lines="none">
+          <ion-input
+            [(ngModel)]="nomeEdit"
+            placeholder="Digite seu nome"
+            maxlength="60">
+          </ion-input>
+        </ion-item>
+        <div class="edit-actions">
+          <ion-button
+            fill="solid"
+            color="success"
+            size="small"
+            [disabled]="carregando || !nomeEdit.trim()"
+            (click)="salvarNome()">
+            <ion-icon slot="start" name="checkmark-circle"></ion-icon>
+            Salvar
+          </ion-button>
+          <ion-button
+            fill="clear"
+            color="medium"
+            size="small"
+            (click)="editando = false">
+            <ion-icon slot="start" name="close-outline"></ion-icon>
+            Cancelar
+          </ion-button>
+        </div>
+      </div>
     </div>
+
+    <div class="info-list">
+
+      <ion-item lines="none" class="info-item">
+        <ion-icon slot="start" name="mail-outline" color="primary"></ion-icon>
+        <ion-label>
+          <small>E-mail</small>
+          <p>{{ professor.email || '—' }}</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item lines="none" class="info-item">
+        <ion-icon slot="start" name="id-card-outline" color="primary"></ion-icon>
+        <ion-label>
+          <small>ID do Professor</small>
+          <p>#{{ professor.id || '—' }}</p>
+        </ion-label>
+        <ion-button
+          *ngIf="modoProprio && professor.id"
+          fill="clear"
+          slot="end"
+          (click)="copiarId()">
+          <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
+        </ion-button>
+      </ion-item>
+
+      <ion-item *ngIf="professor.especialidade" lines="none" class="info-item">
+        <ion-icon slot="start" name="school-outline" color="primary"></ion-icon>
+        <ion-label>
+          <small>Especialidade</small>
+          <p>{{ professor.especialidade }}</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item *ngIf="professor.descricao" lines="none" class="info-item">
+        <ion-icon slot="start" name="document-text-outline" color="primary"></ion-icon>
+        <ion-label class="ion-text-wrap">
+          <small>Sobre</small>
+          <p>{{ professor.descricao }}</p>
+        </ion-label>
+      </ion-item>
+
+    </div>
+
+    <ion-text *ngIf="!modoProprio" color="medium" class="hint-text">
+      <p>
+        <ion-icon name="information-circle-outline"></ion-icon>
+        Você está visualizando o perfil público deste professor.
+      </p>
+    </ion-text>
+
+    <div *ngIf="modoProprio" class="perfil-footer">
+      <ion-button expand="block" fill="outline" color="medium" (click)="escolherFoto()">
+        <ion-icon slot="start" name="camera-outline"></ion-icon>
+        Alterar foto
+      </ion-button>
+    </div>
+
   </div>
 </ion-content>

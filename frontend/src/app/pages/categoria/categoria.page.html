@@ -1,38 +1,76 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="voltar()">
-        <ion-icon name="arrow-back"></ion-icon>
-      </ion-button>
+      <ion-button (click)="voltar()"><ion-icon name="arrow-back"></ion-icon></ion-button>
     </ion-buttons>
     <ion-title>Categorias</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="adicionar()">
-        <ion-icon name="add"></ion-icon>
-      </ion-button>
+      <ion-button (click)="adicionar()"><ion-icon name="add"></ion-icon></ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <div class="categoria-list">
-    <div *ngFor="let cat of categorias" class="categoria-item" (click)="verQuestoes(cat.id!)">
-      <div class="categoria-info">
-        <h3>{{ cat.nome }}</h3>
-        <p *ngIf="cat.descricao">{{ cat.descricao }}</p>
-        <small *ngIf="cat.compartilhadaComIds?.length">Compartilhada</small>
+<ion-content class="ion-padding">
+
+  <div *ngIf="pendentes.length > 0" class="convites-wrapper">
+    <h3 class="section-title">
+      <ion-icon name="time-outline"></ion-icon> Convites pendentes ({{ pendentes.length }})
+    </h3>
+    <div class="convite-card" *ngFor="let p of pendentes">
+      <ion-avatar class="convite-avatar" (click)="verPerfilProfessor(p.origemId)">
+        <img [src]="p.origemFoto || getAvatar(p.origemNome)" />
+      </ion-avatar>
+      <div class="convite-info">
+        <strong>{{ p.categoriaNome }}</strong>
+        <small>
+          Compartilhada por
+          <a (click)="verPerfilProfessor(p.origemId)">{{ p.origemNome }}</a>
+        </small>
       </div>
-      <div class="categoria-actions">
-        <ion-button fill="clear" (click)="compartilhar(cat.id!, $event)" *ngIf="cat.criadorId === professorId">
-          <ion-icon name="share-social-outline"></ion-icon>
+      <div class="convite-actions">
+        <ion-button fill="clear" color="success" (click)="aceitar(p)">
+          <ion-icon slot="icon-only" name="checkmark"></ion-icon>
         </ion-button>
-        <ion-button fill="clear" (click)="editar(cat.id!, $event)">
-          <ion-icon name="create-outline"></ion-icon>
-        </ion-button>
-        <ion-button fill="clear" (click)="excluir(cat.id!, $event)">
-          <ion-icon name="trash-outline"></ion-icon>
+        <ion-button fill="clear" color="medium" (click)="recusar(p)">
+          <ion-icon slot="icon-only" name="close"></ion-icon>
         </ion-button>
       </div>
     </div>
   </div>
+
+  <ion-list class="categoria-list">
+    <div *ngFor="let c of categorias" class="categoria-item" (click)="verQuestoes(c.id!)">
+
+      <div class="categoria-avatar" (click)="$event.stopPropagation(); verPerfilProfessor(c.criadorId)">
+        <ion-avatar>
+          <img [src]="c.criadorFoto || getAvatar(c.criadorNome)" />
+        </ion-avatar>
+      </div>
+
+      <div class="categoria-info">
+        <h3>{{ c.nome }}</h3>
+        <p *ngIf="c.descricao">{{ c.descricao }}</p>
+        <small>
+          por
+          <a (click)="$event.stopPropagation(); verPerfilProfessor(c.criadorId)">
+            {{ c.criadorNome || 'você' }}
+          </a>
+        </small>
+      </div>
+
+      <div class="categoria-actions" (click)="$event.stopPropagation()">
+        <ion-button fill="clear" (click)="compartilhar(c.id!, $event)">
+          <ion-icon slot="icon-only" name="share-social"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" (click)="editar(c.id!, $event)">
+          <ion-icon slot="icon-only" name="pencil"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" (click)="excluir(c.id!, $event)">
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+  </ion-list>
+
+  <p *ngIf="categorias.length === 0" class="empty">Nenhuma categoria ainda.</p>
 </ion-content>

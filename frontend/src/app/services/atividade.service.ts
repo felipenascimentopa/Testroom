@@ -30,11 +30,12 @@ export class AtividadeService {
   }
 
   listar(): Observable<AtividadeResumo[]> {
-  const professorId = this.auth.getProfessorId();
-  return this.http.get<AtividadeResumo[]>(`${this.apiUrl}?professorId=${professorId}`);
-}
+    const professorId = this.auth.getProfessorId();
+    return this.http.get<AtividadeResumo[]>(`${this.apiUrl}?professorId=${professorId}`);
+  }
 
-excluir(id: number): Observable<void> {
-  return this.http.delete<void>(`${this.apiUrl}/${id}`);
-}
+  excluir(id: number): Observable<void> {
+    const professorId = this.auth.getProfessorId();
+    return this.http.delete<void>(`${this.apiUrl}/${id}?professorId=${professorId}`);
+  }
 }

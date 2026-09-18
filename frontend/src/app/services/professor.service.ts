@@ -7,25 +7,24 @@ import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ProfessorService {
-  private apiUrl = `${environment.apiUrl}/professores`;
+    private apiUrl = `${environment.apiUrl}/professores`;
 
-  constructor(private http: HttpClient, private auth: AuthService) {}
+    constructor(private http: HttpClient, private auth: AuthService) {}
 
-  listarTodos(): Observable<ProfessorModel[]> {
-    return this.http.get<ProfessorModel[]>(this.apiUrl);
-  }
-
-  obterPerfil(): Observable<ProfessorModel> {
-        const professorId = this.auth.getProfessorId();
-        if (!professorId) throw new Error('Professor não logado');
-        return this.http.get<ProfessorModel>(`${this.apiUrl}/perfil?professorId=${professorId}`);
+    obterPerfil(): Observable<ProfessorModel> {
+        const id = this.auth.getProfessorId();
+        return this.http.get<ProfessorModel>(`${this.apiUrl}/perfil?professorId=${id}`);
     }
 
-  atualizarNome(professorId: number, nome: string): Observable<{ nome: string }> {
-    return this.http.put<{ nome: string }>(`${this.apiUrl}/${professorId}/nome`, { nome });
-  }
+    buscarPorId(id: number): Observable<ProfessorModel> {
+        return this.http.get<ProfessorModel>(`${this.apiUrl}/${id}`);
+    }
 
-  atualizarFoto(professorId: number, fotoUrl: string): Observable<{ foto: string }> {
-    return this.http.put<{ foto: string }>(`${this.apiUrl}/${professorId}/foto`, { fotoUrl });
-  }
+    atualizarNome(id: number, nome: string): Observable<ProfessorModel> {
+        return this.http.put<ProfessorModel>(`${this.apiUrl}/${id}/nome`, { nome });
+    }
+
+    atualizarFoto(id: number, fotoUrl: string): Observable<ProfessorModel> {
+        return this.http.put<ProfessorModel>(`${this.apiUrl}/${id}/foto`, { foto: fotoUrl });
+    }
 }

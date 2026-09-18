@@ -1,19 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { 
-  IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonButtons, 
+import {
+  IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonButtons,
   IonIcon, IonLabel, IonItem, IonAvatar, IonInput, IonModal,
-  IonText, IonSpinner
+  IonText, IonSpinner, IonNote
 } from '@ionic/angular/standalone';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/autenticacao.service';
 import { ProfessorService } from '../../services/professor.service';
 import { AlertController, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { 
-  arrowBack, copyOutline, personOutline, mailOutline, idCardOutline, 
-  checkmarkCircle, checkmarkCircleOutline, createOutline, closeOutline, cameraOutline
+import {
+  arrowBack, copyOutline, personOutline, mailOutline, idCardOutline,
+  checkmarkCircle, checkmarkCircleOutline, createOutline, closeOutline,
+  cameraOutline, schoolOutline, documentTextOutline, informationCircleOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -22,10 +23,11 @@ import {
   styleUrls: ['./perfil.page.scss'],
   standalone: true,
   imports: [
-    IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonButtons, 
+    CommonModule,
+    FormsModule,
+    IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonButtons,
     IonIcon, IonLabel, IonItem, IonAvatar, IonInput, IonModal,
-    IonText, IonSpinner, 
-    CommonModule, FormsModule
+    IonText, IonSpinner, IonNote
   ]
 })
 export class PerfilPage implements OnInit {
@@ -34,22 +36,36 @@ export class PerfilPage implements OnInit {
   nomeEdit = '';
   fotoTemporaria = '';
   carregando = false;
+  outroProfessorId: number | null = null;
+  modoProprio = true;
 
   constructor(
     private authService: AuthService,
     private professorService: ProfessorService,
     private router: Router,
     private toastController: ToastController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private route: ActivatedRoute,
+
   ) {
-    addIcons({ 
-      arrowBack, copyOutline, personOutline, mailOutline, idCardOutline, 
-      checkmarkCircle, createOutline, closeOutline, cameraOutline, checkmarkCircleOutline
+    addIcons({
+      arrowBack, copyOutline, personOutline, mailOutline, idCardOutline,
+      checkmarkCircle, createOutline, closeOutline, cameraOutline, checkmarkCircleOutline,
+      schoolOutline, documentTextOutline, informationCircleOutline
     });
   }
 
   ngOnInit() {
     this.carregarPerfil();
+    this.route.queryParams.subscribe(params => {
+      const idParam = params['id'] ? +params['id'] : null;
+      const meuId = this.authService.getProfessorId();
+      this.outroProfessorId = idParam;
+      this.modoProprio = !idParam || idParam === meuId;
+
+      if (this.modoProprio) this.carregarPerfil();
+      else this.carregarOutroPerfil(idParam!);
+    });
   }
 
   carregarPerfil() {
@@ -75,6 +91,24 @@ export class PerfilPage implements OnInit {
       },
       error: (err) => {
         console.warn('Erro ao buscar perfil do backend, usando dados locais', err);
+      }
+    });
+  }
+
+  carregarOutroPerfil(id: number) {
+    this.carregando = true;
+    this.professorService.buscarPorId(id).subscribe({
+      next: (data) => {
+        this.professor = data;
+        this.carregando = false;
+      },
+      error: async () => {
+        this.carregando = false;
+        const t = await this.toastController.create({
+          message: 'Professor não encontrado.', duration: 2000, color: 'danger'
+        });
+        await t.present();
+        this.router.navigate(['/categorias']);
       }
     });
   }
@@ -131,8 +165,8 @@ export class PerfilPage implements OnInit {
       ],
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
-        { 
-          text: 'Definir', 
+        {
+          text: 'Definir',
           handler: (data) => {
             if (data.url && data.url.trim()) {
               this.definirFoto(data.url.trim());
@@ -183,7 +217,8 @@ export class PerfilPage implements OnInit {
   }
 
   voltar() {
-    this.router.navigate(['/menu']);
+    if (!this.modoProprio) this.router.navigate(['/categorias']);
+    else this.router.navigate(['/menu']);
   }
 
   async copiarId() {

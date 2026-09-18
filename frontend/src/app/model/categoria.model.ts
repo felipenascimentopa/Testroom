@@ -3,5 +3,8 @@ export class CategoriaModel {
     nome: string = '';
     descricao?: string = '';
     criadorId?: number;
-    compartilhadaComIds?: number[];  
+    criadorNome?: string;     
+    criadorFoto?: string;  
+    compartilhadaComIds?: number[];
+    compartilhadaComNomes?: string[];
 }

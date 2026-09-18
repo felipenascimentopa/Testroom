@@ -45,13 +45,19 @@ CREATE TABLE alternativa (
 CREATE TABLE atividade (
     id BIGINT NOT NULL AUTO_INCREMENT,
     titulo VARCHAR(255) NOT NULL,
+    descricao VARCHAR(2000),
     instrucoes VARCHAR(2000),
     valor_pontos DECIMAL(5,2) NOT NULL,
     data_geracao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    quantidade_versoes INT NOT NULL DEFAULT 1,
+    grupo_id VARCHAR(36) NULL,
     professor_id BIGINT NOT NULL,
     PRIMARY KEY (id),
     CONSTRAINT fk_atividade_professor FOREIGN KEY (professor_id) REFERENCES professor(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE INDEX idx_atividade_grupo ON atividade(grupo_id);
+CREATE INDEX idx_atividade_professor ON atividade(professor_id);
 
 CREATE TABLE categoria (
     id BIGINT NOT NULL AUTO_INCREMENT,
@@ -77,6 +83,26 @@ CREATE TABLE categoria_compartilhada (
     CONSTRAINT fk_categoria_compartilhada_categoria FOREIGN KEY (categoria_id) REFERENCES categoria(id),
     CONSTRAINT fk_categoria_compartilhada_professor FOREIGN KEY (professor_id) REFERENCES professor(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE compartilhamento_categoria (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    categoria_id BIGINT NOT NULL,
+    origem_id BIGINT NOT NULL,
+    destino_id BIGINT NOT NULL,
+    data_compartilhamento DATETIME NOT NULL,
+    status ENUM('PENDENTE', 'ACEITO', 'RECUSADO') NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_compartilhamento_cat_destino (categoria_id, destino_id),
+    CONSTRAINT fk_compartilhamento_categoria
+        FOREIGN KEY (categoria_id) REFERENCES categoria(id) ON DELETE CASCADE,
+    CONSTRAINT fk_compartilhamento_origem
+        FOREIGN KEY (origem_id) REFERENCES professor(id),
+    CONSTRAINT fk_compartilhamento_destino
+        FOREIGN KEY (destino_id) REFERENCES professor(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE INDEX idx_compartilhamento_destino_status
+    ON compartilhamento_categoria(destino_id, status);
 
 CREATE TABLE questao_atividade (
     id BIGINT NOT NULL AUTO_INCREMENT,

@@ -22,11 +22,13 @@
       font-size: 1.1rem;
       color: var(--ion-text-color);
     }
+
     p {
       margin: 0;
       font-size: 0.85rem;
       color: var(--ion-color-medium);
     }
+
     small {
       font-size: 0.7rem;
       color: var(--ion-color-secondary);
@@ -49,5 +51,84 @@
         --color: var(--ion-color-primary);
       }
     }
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--ion-color-medium);
+    margin: 0 0 8px;
+  }
+
+  .convites-wrapper {
+    margin-bottom: 24px;
+  }
+
+  .convite-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    margin-bottom: 8px;
+    border: 1px solid var(--ion-color-warning);
+    border-radius: 10px;
+    background: rgba(255, 196, 9, 0.06);
+
+    .convite-avatar {
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+    }
+
+    .convite-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+
+      strong {
+        font-size: 0.95rem;
+        color: var(--ion-text-color);
+      }
+
+      small {
+        font-size: 0.78rem;
+        color: var(--ion-color-medium);
+
+        a {
+          color: var(--ion-color-primary);
+          cursor: pointer;
+        }
+      }
+    }
+
+    .convite-actions {
+      display: flex;
+      gap: 2px;
+    }
+  }
+
+  .categoria-avatar {
+    margin-right: 12px;
+    cursor: pointer;
+
+    ion-avatar {
+      width: 36px;
+      height: 36px;
+    }
+  }
+
+  .categoria-item {
+    display: flex;
+    align-items: center;
+  }
+
+  .empty {
+    text-align: center;
+    color: var(--ion-color-medium);
+    margin-top: 24px;
   }
 }
