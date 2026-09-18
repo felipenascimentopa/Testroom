@@ -7,15 +7,17 @@ export interface AtividadeRequest {
 }
 
 export interface AtividadeResponse {
-    id: number;
-    titulo: string;
-    descricao?: string;
-    instrucoes?: string;
-    valorPontos: number;
-    professorId: number;
-    professorNome: string;
-    dataGeracao: string;
-    questoes: QuestaoAtividade[];
+  id: number;
+  titulo: string;
+  descricao?: string;
+  instrucoes?: string;
+  valorPontos: number;
+  professorId: number;
+  professorNome: string;
+  dataGeracao: string;
+  quantidadeVersoes?: number;
+  grupoId?: string | null;  
+  questoes: QuestaoAtividade[];
 }
 
 export interface QuestaoAtividade {

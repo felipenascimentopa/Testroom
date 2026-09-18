@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonButtons,
   IonIcon, IonItem, IonLabel, IonInput, IonTextarea, IonSelect,
-  IonSelectOption, IonList, IonListHeader, IonCheckbox, IonLoading, IonAlert
+  IonSelectOption, IonList, IonCheckbox, IonLoading, IonAlert
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { AtividadeService } from '../../services/atividade.service';
@@ -15,7 +15,9 @@ import { CategoriaModel } from '../../model/categoria.model';
 import { QuestaoModel } from '../../model/questao.model';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { arrowBack } from 'ionicons/icons';
+import { arrowBack, funnelOutline, helpCircleOutline } from 'ionicons/icons';
+
+type QuestaoDisponivel = QuestaoModel & { selecionada: boolean; valorAtribuido: number };
 
 @Component({
   selector: 'app-gerar-atividade',
@@ -23,26 +25,10 @@ import { arrowBack } from 'ionicons/icons';
   styleUrls: ['./gerar-atividade.page.scss'],
   standalone: true,
   imports: [
-    CommonModule,
-    FormsModule,
-    IonContent,
-    IonHeader,
-    IonTitle,
-    IonToolbar,
-    IonButton,
-    IonButtons,
-    IonIcon,
-    IonItem,
-    IonLabel,
-    IonInput,
-    IonTextarea,
-    IonSelect,
-    IonSelectOption,
-    IonList,
-    IonListHeader,
-    IonCheckbox,
-    IonLoading,
-    IonAlert
+    CommonModule, FormsModule,
+    IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonButtons,
+    IonIcon, IonItem, IonLabel, IonInput, IonTextarea, IonSelect,
+    IonSelectOption, IonList, IonCheckbox, IonLoading, IonAlert
   ]
 })
 export class GerarAtividadePage implements OnInit {
@@ -55,8 +41,9 @@ export class GerarAtividadePage implements OnInit {
   };
   categorias: CategoriaModel[] = [];
   filtroCategorias: number[] = [];
-  questoesDisponiveis: (QuestaoModel & { selecionada: boolean; valorAtribuido: number })[] = [];
+  questoesDisponiveis: QuestaoDisponivel[] = [];
   questoesSelecionadas: QuestaoSelecionada[] = [];
+  totalPontos = 0;
 
   constructor(
     private atividadeService: AtividadeService,
@@ -66,12 +53,11 @@ export class GerarAtividadePage implements OnInit {
     private alertCtrl: AlertController,
     private loadingCtrl: LoadingController
   ) {
-    addIcons({ arrowBack });
+    addIcons({ arrowBack, funnelOutline, helpCircleOutline });
   }
 
   ngOnInit() {
     this.carregarCategorias();
-    this.carregarQuestoes();
   }
 
   carregarCategorias() {
@@ -79,59 +65,79 @@ export class GerarAtividadePage implements OnInit {
   }
 
   carregarQuestoes() {
-    const obs = (this.filtroCategorias && this.filtroCategorias.length > 0)
-      ? this.questaoService.listarPorCategorias(this.filtroCategorias)
-      : this.questaoService.listar();
+    if (!this.filtroCategorias || this.filtroCategorias.length === 0) {
+      this.questoesDisponiveis = [];
+      this.questoesSelecionadas = [];
+      this.recalcularTotal();
+      return;
+    }
 
-    obs.subscribe(data => {
+    this.questaoService.listarPorCategorias(this.filtroCategorias).subscribe(data => {
       this.questoesDisponiveis = data.map(q => ({
         ...q,
         selecionada: false,
         valorAtribuido: 1.0
       }));
       this.questoesSelecionadas = [];
+      this.recalcularTotal();
     });
   }
 
-  sanitizarPontos(q: any) {
+  get temFiltroSelecionado(): boolean {
+    return this.filtroCategorias != null && this.filtroCategorias.length > 0;
+  }
+
+  atualizarSelecao(q: QuestaoDisponivel) {
+    if (q.selecionada) {
+      const existente = this.questoesSelecionadas.find(s => s.questaoId === q.id);
+      if (!existente) {
+        this.questoesSelecionadas.push({
+          questaoId: q.id!,
+          valorPontos: Number(q.valorAtribuido) || 1
+        });
+      }
+    } else {
+      this.questoesSelecionadas = this.questoesSelecionadas.filter(
+        item => item.questaoId !== q.id
+      );
+    }
+    this.recalcularTotal();
+  }
+
+  sanitizarPontos(q: QuestaoDisponivel) {
     const n = Number(q.valorAtribuido);
     if (!isFinite(n) || n <= 0) {
       q.valorAtribuido = 1.0;
     } else {
       q.valorAtribuido = Math.round(n * 100) / 100;
     }
+    const sel = this.questoesSelecionadas.find(s => s.questaoId === q.id);
+    if (sel) {
+      sel.valorPontos = q.valorAtribuido;
+    }
+    this.recalcularTotal();
   }
 
-  atualizarSelecao(q: any) {
-    if (q.selecionada) {
-      this.questoesSelecionadas.push({
-        questaoId: q.id!,
-        valorPontos: q.valorAtribuido
-      });
-    } else {
-      this.questoesSelecionadas = this.questoesSelecionadas.filter(
-        item => item.questaoId !== q.id
-      );
+  recalcularTotal() {
+    this.totalPontos = this.questoesSelecionadas.reduce(
+      (acc, s) => acc + (Number(s.valorPontos) || 0), 0
+    );
+  }
+
+  formatarTipo(tipo: string): string {
+    switch (tipo) {
+      case 'UNICA_ESCOLHA': return 'Única escolha';
+      case 'MULTIPLA_ESCOLHA': return 'Múltipla escolha';
+      case 'VERDADEIROFALSO': return 'Verdadeiro ou falso';
+      default: return tipo;
     }
   }
 
   async criar() {
-    if (this.questoesSelecionadas.length === 0) {
-      const alert = await this.alertCtrl.create({
-        header: 'Atenção',
-        message: 'Selecione pelo menos uma questão.',
-        buttons: ['OK']
-      });
-      await alert.present();
+    if (!this.atividade.titulo?.trim()) {
+      await this.aviso('Informe um título para a atividade.');
       return;
     }
-
-    this.questoesSelecionadas = this.questoesDisponiveis
-      .filter(q => q.selecionada)
-      .map(q => ({
-        questaoId: q.id!,
-        valorPontos: q.valorAtribuido
-      }));
 
     const selecionadas = this.questoesDisponiveis
       .filter(q => q.selecionada)
@@ -143,6 +149,11 @@ export class GerarAtividadePage implements OnInit {
         };
       });
 
+    if (selecionadas.length === 0) {
+      await this.aviso('Selecione pelo menos uma questão.');
+      return;
+    }
+
     const payload: AtividadeComQuestoesRequest = {
       titulo: this.atividade.titulo,
       descricao: this.atividade.descricao,
@@ -151,20 +162,17 @@ export class GerarAtividadePage implements OnInit {
       quantidadeVersoes: this.atividade.quantidadeVersoes || 1
     };
 
-
     const loading = await this.loadingCtrl.create({ message: 'Criando atividade...' });
     await loading.present();
 
     this.atividadeService.criarComQuestoes(payload).subscribe({
       next: (versoes) => {
         loading.dismiss();
-        if (versoes && versoes.length > 0) {
-          this.router.navigate(['/visualizar-atividade', versoes[0].id]);
-        } else {
-          this.router.navigate(['/atividades']);
-        }
+        const grupoId = versoes?.[0]?.grupoId;
+        this.router.navigate(['/atividades'], {
+          queryParams: grupoId ? { novo: grupoId } : {}
+        });
       },
-
       error: async (err) => {
         loading.dismiss();
         const alert = await this.alertCtrl.create({
@@ -175,6 +183,15 @@ export class GerarAtividadePage implements OnInit {
         await alert.present();
       }
     });
+  }
+
+  private async aviso(mensagem: string) {
+    const alert = await this.alertCtrl.create({
+      header: 'Atenção',
+      message: mensagem,
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 
   voltar() {

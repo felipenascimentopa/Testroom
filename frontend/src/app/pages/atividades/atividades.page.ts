@@ -3,14 +3,16 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonButtons,
-  IonIcon, IonLoading, IonAlert
+  IonIcon, IonLoading
 } from '@ionic/angular/standalone';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AtividadeService } from '../../services/atividade.service';
 import { AtividadeResumo } from '../../model/atividade.model';
 import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { arrowBack, downloadOutline, keyOutline, trashOutline, eyeOutline, add } from 'ionicons/icons';
+import {
+  arrowBack, downloadOutline, keyOutline, trashOutline, eyeOutline, add
+} from 'ionicons/icons';
 
 interface GrupoAtividade {
   grupoId: string | null;
@@ -25,15 +27,17 @@ interface GrupoAtividade {
   imports: [
     CommonModule, FormsModule,
     IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonButtons,
-    IonIcon, IonLoading, IonAlert
+    IonIcon, IonLoading
   ]
 })
 export class AtividadesPage implements OnInit {
   grupos: GrupoAtividade[] = [];
+  novoGrupoId: string | null = null;
 
   constructor(
     private atividadeService: AtividadeService,
     private router: Router,
+    private route: ActivatedRoute,
     private alertCtrl: AlertController,
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController
@@ -42,7 +46,10 @@ export class AtividadesPage implements OnInit {
   }
 
   ngOnInit() {
-    this.carregar();
+    this.route.queryParams.subscribe(params => {
+      this.novoGrupoId = params['novo'] || null;
+      this.carregar();
+    });
   }
 
   async carregar() {
@@ -52,10 +59,13 @@ export class AtividadesPage implements OnInit {
       next: (lista) => {
         this.grupos = this.agrupar(lista);
         loading.dismiss();
+        if (this.novoGrupoId) {
+          setTimeout(() => this.destacarNovoGrupo(), 300);
+        }
       },
       error: async () => {
         loading.dismiss();
-        await this.toast('Falha ao carregar atividades.');
+        await this.toast('Falha ao carregar atividades.', 'danger');
       }
     });
   }
@@ -73,6 +83,22 @@ export class AtividadesPage implements OnInit {
       g.versoes.sort((x, y) => x.id - y.id);
     }
     return Array.from(mapa.values());
+  }
+
+  private destacarNovoGrupo() {
+    const el = document.getElementById('grupo-' + this.novoGrupoId);
+    if (!el) return;
+
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    el.classList.add('novo-destaque');
+
+    setTimeout(() => el.classList.remove('novo-destaque'), 4000);
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {},
+      replaceUrl: true
+    });
   }
 
   getTituloGrupo(g: GrupoAtividade): string {
@@ -94,7 +120,7 @@ export class AtividadesPage implements OnInit {
       },
       error: async () => {
         loading.dismiss();
-        await this.toast('Falha ao gerar PDF.');
+        await this.toast('Falha ao gerar PDF.', 'danger');
       }
     });
   }
@@ -109,7 +135,7 @@ export class AtividadesPage implements OnInit {
       },
       error: async () => {
         loading.dismiss();
-        await this.toast('Falha ao gerar gabarito.');
+        await this.toast('Falha ao gerar gabarito.', 'danger');
       }
     });
   }
@@ -139,19 +165,19 @@ export class AtividadesPage implements OnInit {
     const loading = await this.loadingCtrl.create({ message: 'Excluindo...' });
     await loading.present();
     try {
-      await Promise.all(g.versoes.map(v =>
-        this.atividadeService.excluir(v.id).toPromise()
-      )).then();
+      for (const v of g.versoes) {
+        await this.atividadeService.excluir(v.id).toPromise();
+      }
       loading.dismiss();
       this.carregar();
     } catch {
       loading.dismiss();
-      await this.toast('Erro ao excluir.');
+      await this.toast('Erro ao excluir.', 'danger');
     }
   }
 
-  private async toast(msg: string) {
-    const t = await this.toastCtrl.create({ message: msg, duration: 2000, color: 'danger' });
+  private async toast(msg: string, color: string = 'danger') {
+    const t = await this.toastCtrl.create({ message: msg, duration: 2000, color });
     await t.present();
   }
 

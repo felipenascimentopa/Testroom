@@ -12,7 +12,8 @@ import {
   folderOutline,
   helpCircleOutline,
   personOutline,
-  documentTextOutline
+  documentTextOutline,
+  accessibilityOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -32,7 +33,8 @@ export class MenuPage {
       folderOutline,
       helpCircleOutline,
       personOutline,
-      documentTextOutline
+      documentTextOutline,
+      accessibilityOutline
     });
   }
 
@@ -50,6 +52,10 @@ export class MenuPage {
 
   irParaAtividades() {                    
     this.router.navigate(['/atividades']);
+  }
+
+  irParaAcessibilidade() {
+    this.router.navigate(['/acessibilidade']);
   }
 
   irParaPerfil() {

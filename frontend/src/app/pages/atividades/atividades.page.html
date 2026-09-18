@@ -15,16 +15,46 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <div *ngIf="grupos.length === 0" class="vazio">
-    <p>Nenhuma atividade criada ainda.</p>
+  <div class="legenda" *ngIf="grupos.length > 0">
+    <span class="legenda-titulo">Legenda:</span>
+    <div class="legenda-itens">
+      <div class="legenda-item">
+        <ion-icon name="eye-outline"></ion-icon>
+        <span>Visualizar</span>
+      </div>
+      <div class="legenda-item">
+        <ion-icon name="download-outline"></ion-icon>
+        <span>Baixar prova</span>
+      </div>
+      <div class="legenda-item legenda-gabarito">
+        <ion-icon name="key-outline"></ion-icon>
+        <span>Baixar gabarito</span>
+      </div>
+      <div class="legenda-item legenda-excluir">
+        <ion-icon name="trash-outline"></ion-icon>
+        <span>Excluir atividade</span>
+      </div>
+    </div>
   </div>
 
-  <div *ngFor="let g of grupos" class="grupo-card">
+<ion-content class="ion-padding">
+  <div *ngIf="grupos.length === 0" class="vazio">
+    <p>Nenhuma atividade criada ainda.</p>
+    <p class="dica">Toque em <strong>+</strong> para criar a primeira.</p>
+  </div>
+
+  <div *ngFor="let g of grupos"
+       class="grupo-card"
+       [id]="'grupo-' + (g.grupoId || ('single-' + g.versoes[0].id))">
+
     <div class="grupo-header">
       <div>
         <h2>{{ getTituloGrupo(g) }}</h2>
-        <span class="meta">{{ g.versoes.length }} versão(ões) ·
-          {{ g.versoes[0].quantidadeQuestoes }} questões</span>
+        <span class="meta">
+          {{ g.versoes.length }} versão(ões) ·
+          {{ g.versoes[0].quantidadeQuestoes }} questões ·
+          {{ g.versoes[0].valorPontos }} pts
+        </span>
       </div>
       <ion-button fill="clear" color="danger" (click)="excluirGrupo(g)">
         <ion-icon name="trash-outline"></ion-icon>
@@ -34,17 +64,18 @@
     <div *ngFor="let v of g.versoes" class="versao-row">
       <div class="versao-info">
         <span class="versao-titulo">{{ v.titulo }}</span>
-        <span class="versao-meta">{{ v.valorPontos }} pts ·
-          {{ v.dataGeracao | date:'dd/MM/yyyy HH:mm' }}</span>
+        <span class="versao-meta">
+          {{ v.valorPontos }} pts · {{ v.dataGeracao | date:'dd/MM/yyyy HH:mm' }}
+        </span>
       </div>
       <div class="versao-actions">
         <ion-button fill="clear" (click)="visualizar(v)" title="Visualizar">
           <ion-icon name="eye-outline"></ion-icon>
         </ion-button>
-        <ion-button fill="clear" (click)="baixarPdf(v)" title="Baixar prova">
+        <ion-button fill="clear" (click)="baixarPdf(v)" title="Baixar prova (PDF)">
           <ion-icon name="download-outline"></ion-icon>
         </ion-button>
-        <ion-button fill="clear" color="warning" (click)="baixarGabarito(v)" title="Baixar gabarito">
+        <ion-button fill="clear" color="warning" (click)="baixarGabarito(v)" title="Baixar gabarito (PDF)">
           <ion-icon name="key-outline"></ion-icon>
         </ion-button>
       </div>

@@ -51,4 +51,8 @@ export const routes: Routes = [
     path: 'atividades',
     loadComponent: () => import('./pages/atividades/atividades.page').then( m => m.AtividadesPage)
   },
+  {
+    path: 'acessibilidade',
+    loadComponent: () => import('./pages/acessibilidade/acessibilidade.page').then( m => m.AcessibilidadePage)
+  },
 ];

@@ -1,0 +1,83 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="voltar()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Acessibilidade</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="resetar()" title="Restaurar padrões">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="a11y-container">
+    <!-- Tamanho da fonte -->
+    <section class="a11y-section">
+      <div class="section-titulo">
+        <ion-icon name="text-outline"></ion-icon>
+        <div>
+          <h2>Tamanho do texto</h2>
+          <p>Ajuste o tamanho da fonte em todo o aplicativo.</p>
+        </div>
+      </div>
+
+      <ion-radio-group [value]="escala" (ionChange)="alterarEscala($any($event).detail.value)">
+        <ion-item *ngFor="let op of opcoesEscala" class="radio-item">
+          <ion-radio slot="start" [value]="op.valor"></ion-radio>
+          <ion-label>
+            <div class="radio-titulo" [style.font-size.rem]="op.valor * 1">
+              {{ op.rotulo }}
+            </div>
+            <span class="radio-meta">{{ op.exemplo }}</span>
+          </ion-label>
+        </ion-item>
+      </ion-radio-group>
+    </section>
+
+    <!-- Contraste -->
+    <section class="a11y-section">
+      <div class="section-titulo">
+        <ion-icon name="contrast-outline"></ion-icon>
+        <div>
+          <h2>Contraste</h2>
+          <p>Escolha o esquema de cores mais confortável.</p>
+        </div>
+      </div>
+
+      <ion-segment [value]="contraste" (ionChange)="alterarContraste($any($event).detail.value)">
+        <ion-segment-button value="normal">
+          <ion-label>Normal</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="alto">
+          <ion-label>Alto</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="ultra">
+          <ion-label>Máximo</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      <div class="preview-contraste" [attr.data-preview]="contraste">
+        <p>Exemplo de texto neste contraste</p>
+        <span>Texto secundário</span>
+        <button>Botão</button>
+      </div>
+    </section>
+
+    <p class="nota">
+      As preferências ficam salvas no seu dispositivo e são aplicadas em todas as telas.
+    </p>
+  </div>
+</ion-content>
+
+<ion-toast
+  [isOpen]="toastAberto"
+  [message]="toastMsg"
+  [duration]="1500"
+  position="bottom"
+  (ionDismiss)="toastAberto = false">
+</ion-toast>

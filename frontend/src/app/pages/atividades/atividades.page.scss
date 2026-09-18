@@ -3,6 +3,18 @@
   background: var(--ion-card-background);
   padding: 16px;
   margin-bottom: 16px;
+  transition: border-color 0.4s, box-shadow 0.4s;
+}
+
+.novo-destaque {
+  animation: pulse-destaque 1.2s ease-in-out 2;
+  border-color: var(--ion-color-secondary);
+}
+
+@keyframes pulse-destaque {
+  0%   { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0.5); }
+  50%  { box-shadow: 0 0 0 8px rgba(201, 168, 76, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0); }
 }
 
 .grupo-header {
@@ -40,6 +52,7 @@
       font-size: 0.95rem;
       color: var(--ion-text-color);
     }
+
     .versao-meta {
       font-size: 0.75rem;
       color: var(--ion-color-medium);
@@ -63,4 +76,52 @@
   text-align: center;
   color: var(--ion-color-medium);
   margin-top: 40px;
+
+  .dica {
+    font-size: 0.8rem;
+    margin-top: 4px;
+  }
+}
+
+.legenda {
+  background: var(--ion-card-background);
+  border: 1px solid var(--ion-border-color);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+
+  .legenda-titulo {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--ion-color-medium);
+    margin-bottom: 10px;
+  }
+
+  .legenda-itens {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+  }
+
+  .legenda-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: var(--ion-text-color);
+
+    ion-icon {
+      font-size: 1.1rem;
+      color: var(--ion-color-primary);
+    }
+
+    &.legenda-gabarito ion-icon {
+      color: var(--ion-color-warning, #c9a84c);
+    }
+
+    &.legenda-excluir ion-icon {
+      color: var(--ion-color-danger, #d9534f);
+    }
+  }
 }
