@@ -22,15 +22,18 @@ export interface AtividadeResponse {
 
 export interface QuestaoAtividade {
     questaoId: number;
+    foto?: string;
     enunciado: string;
     posicao: number;
     valorPontos: number;
+    quebraPaginaAntes?: boolean;
     alternativas: AlternativaVisualizacao[];
 }
 
 export interface AlternativaVisualizacao {
     id: number;
     texto: string;
+    verdadeira?: boolean;     
 }
 
 export interface AtividadeResumo {

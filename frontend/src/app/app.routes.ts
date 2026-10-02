@@ -1,58 +1,74 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
-  { 
-    path: '', redirectTo: 'login', pathMatch: 'full' 
+  {
+    path: '', redirectTo: 'login', pathMatch: 'full'
   },
-  { 
-    path: 'login', loadComponent: () => import('./pages/login/login.page').then(m => m.LoginPage) 
+  {
+    path: 'login', loadComponent: () => import('./pages/login/login.page').then(m => m.LoginPage)
   },
-  { 
-    path: 'cadastro', loadComponent: () => import('./pages/cadastro/cadastro.page').then(m => m.CadastroPage) 
+  {
+    path: 'cadastro', loadComponent: () => import('./pages/cadastro/cadastro.page').then(m => m.CadastroPage)
   },
-  { 
-    path: 'menu', loadComponent: () => import('./pages/menu/menu.page').then(m => m.MenuPage) 
+  {
+    path: 'menu', loadComponent: () => import('./pages/menu/menu.page').then(m => m.MenuPage)
   },
-  { 
-    path: 'categorias', loadComponent: () => import('./pages/categoria/categoria.page').then(m => m.CategoriaPage) 
+  {
+    path: 'categorias', loadComponent: () => import('./pages/categoria/categoria.page').then(m => m.CategoriaPage)
   },
-  { 
-    path: 'categoria-form', loadComponent: () => import('./pages/categoria-form/categoria-form.page').then(m => m.CategoriaFormPage) 
+  {
+    path: 'categoria-form', loadComponent: () => import('./pages/categoria-form/categoria-form.page').then(m => m.CategoriaFormPage)
   },
-  { 
-    path: 'categoria-form/:id', loadComponent: () => import('./pages/categoria-form/categoria-form.page').then(m => m.CategoriaFormPage) 
+  {
+    path: 'categoria-form/:id', loadComponent: () => import('./pages/categoria-form/categoria-form.page').then(m => m.CategoriaFormPage)
   },
-  { 
-    path: 'questoes', loadComponent: () => import('./pages/questao/questao.page').then(m => m.QuestaoPage) 
+  {
+    path: 'questoes', loadComponent: () => import('./pages/questao/questao.page').then(m => m.QuestaoPage)
   },
-  { 
-    path: 'questao-form', loadComponent: () => import('./pages/questao-form/questao-form.page').then(m => m.QuestaoFormPage) 
+  {
+    path: 'questao-form', loadComponent: () => import('./pages/questao-form/questao-form.page').then(m => m.QuestaoFormPage)
   },
-  { 
-    path: 'questao-form/:id', loadComponent: () => import('./pages/questao-form/questao-form.page').then(m => m.QuestaoFormPage) 
+  {
+    path: 'questao-form/:id', loadComponent: () => import('./pages/questao-form/questao-form.page').then(m => m.QuestaoFormPage)
   },
   {
     path: 'perfil',
-    loadComponent: () => import('./pages/perfil/perfil.page').then( m => m.PerfilPage)
+    loadComponent: () => import('./pages/perfil/perfil.page').then(m => m.PerfilPage)
   },
-  { 
-  path: 'perfil', 
-  loadComponent: () => import('./pages/perfil/perfil.page').then(m => m.PerfilPage) 
-},
+  {
+    path: 'perfil',
+    loadComponent: () => import('./pages/perfil/perfil.page').then(m => m.PerfilPage)
+  },
   {
     path: 'gerar-atividade',
-    loadComponent: () => import('./pages/gerar-atividade/gerar-atividade.page').then( m => m.GerarAtividadePage)
+    loadComponent: () => import('./pages/gerar-atividade/gerar-atividade.page').then(m => m.GerarAtividadePage)
   },
   {
     path: 'visualizar-atividade/:id',
-    loadComponent: () => import('./pages/visualizar-atividade/visualizar-atividade.page').then( m => m.VisualizarAtividadePage)
+    loadComponent: () => import('./pages/visualizar-atividade/visualizar-atividade.page').then(m => m.VisualizarAtividadePage)
   },
   {
     path: 'atividades',
-    loadComponent: () => import('./pages/atividades/atividades.page').then( m => m.AtividadesPage)
+    loadComponent: () => import('./pages/atividades/atividades.page').then(m => m.AtividadesPage)
   },
   {
     path: 'acessibilidade',
-    loadComponent: () => import('./pages/acessibilidade/acessibilidade.page').then( m => m.AcessibilidadePage)
+    loadComponent: () => import('./pages/acessibilidade/acessibilidade.page').then(m => m.AcessibilidadePage)
+  },
+  {
+    path: 'pdf-config',
+    loadComponent: () => import('./pages/pdf-config/pdf-config.page').then(m => m.PdfConfigPage)
+  },
+  {
+    path: 'pdf-config/:id',
+    loadComponent: () => import('./pages/pdf-config/pdf-config.page').then(m => m.PdfConfigPage)
+  },
+  {
+    path: 'editor-atividade/:id',
+    loadComponent: () => import('./pages/editor-atividade/editor-atividade.page').then(m => m.EditorAtividadePage)
+  },
+  {
+    path: 'editor-atividade',
+    loadComponent: () => import('./pages/editor-atividade/editor-atividade.page').then( m => m.EditorAtividadePage)
   },
 ];

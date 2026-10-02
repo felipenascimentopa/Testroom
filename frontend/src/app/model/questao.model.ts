@@ -9,6 +9,7 @@ export interface Alternativa {
 export class QuestaoModel {
     id?: number;
     tipoQuestao: TipoQuestao = TipoQuestao.UNICA_ESCOLHA;
+    foto?: string = '';  
     enunciado: string = '';
     criadoPor?: string = '';
     professorId?: number;

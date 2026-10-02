@@ -77,58 +77,12 @@ export class VisualizarAtividadePage implements OnInit {
     });
   }
 
-  async baixarPdf() {
-    if (!this.atividadeId) return;
-    const loading = await this.loadingCtrl.create({ message: 'Gerando PDF...' });
-    await loading.present();
-
-    this.atividadeService.exportarPdf(this.atividadeId).subscribe({
-      next: (blob) => {
-        loading.dismiss();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `atividade_${this.atividadeId}.pdf`;
-        a.click();
-        window.URL.revokeObjectURL(url);
-      },
-      error: async (err) => {
-        loading.dismiss();
-        const alert = await this.alertCtrl.create({
-          header: 'Erro',
-          message: 'Falha ao gerar PDF.',
-          buttons: ['OK']
-        });
-        await alert.present();
-      }
-    });
+  baixarPdf() {
+    this.router.navigate(['/pdf-config', this.atividadeId], { queryParams: { tipo: 'prova' } });
   }
 
-  async baixarGabarito() {
-    if (!this.atividadeId) return;
-    const loading = await this.loadingCtrl.create({ message: 'Gerando gabarito...' });
-    await loading.present();
-
-    this.atividadeService.exportarGabarito(this.atividadeId).subscribe({
-      next: (blob) => {
-        loading.dismiss();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `gabarito_${this.atividadeId}.pdf`;
-        a.click();
-        window.URL.revokeObjectURL(url);
-      },
-      error: async () => {
-        loading.dismiss();
-        const alert = await this.alertCtrl.create({
-          header: 'Erro',
-          message: 'Falha ao gerar gabarito.',
-          buttons: ['OK']
-        });
-        await alert.present();
-      }
-    });
+  baixarGabarito() {
+    this.router.navigate(['/pdf-config', this.atividadeId], { queryParams: { tipo: 'gabarito' } });
   }
 
   voltar() {

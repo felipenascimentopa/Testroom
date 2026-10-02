@@ -16,6 +16,7 @@ import {
   checkmarkCircle, checkmarkCircleOutline, createOutline, closeOutline,
   cameraOutline, schoolOutline, documentTextOutline, informationCircleOutline
 } from 'ionicons/icons';
+import { ImagePickerComponent } from '../../components/image-picker.component';
 
 @Component({
   selector: 'app-perfil',
@@ -25,6 +26,7 @@ import {
   imports: [
     CommonModule,
     FormsModule,
+    ImagePickerComponent,
     IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonButtons,
     IonIcon, IonLabel, IonItem, IonAvatar, IonInput, IonModal,
     IonText, IonSpinner, IonNote
@@ -211,11 +213,6 @@ export class PerfilPage implements OnInit {
     });
   }
 
-  getAvatarUrl() {
-    if (this.professor.foto) return this.professor.foto;
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(this.professor.nome)}&background=1a2f3a&color=fff&size=128`;
-  }
-
   voltar() {
     if (!this.modoProprio) this.router.navigate(['/categorias']);
     else this.router.navigate(['/menu']);
@@ -229,6 +226,18 @@ export class PerfilPage implements OnInit {
         this.mostrarToast('Não foi possível copiar.');
       });
     }
+  }
+
+  onFotoChange(base64: string | null) {
+    this.professor.foto = base64;
+    if (!base64) return;
+    this.professorService.atualizarFoto(this.professor.id, base64).subscribe({
+      next: (res) => {
+        this.professor.foto = res.foto;
+        const usuario = this.authService.getUsuario();
+        if (usuario) { usuario.foto = res.foto; this.authService.salvarUsuario(usuario); }
+      }
+    });
   }
 
   async mostrarToast(mensagem: string) {

@@ -110,34 +110,12 @@ export class AtividadesPage implements OnInit {
     this.router.navigate(['/visualizar-atividade', a.id]);
   }
 
-  async baixarPdf(a: AtividadeResumo) {
-    const loading = await this.loadingCtrl.create({ message: 'Gerando PDF...' });
-    await loading.present();
-    this.atividadeService.exportarPdf(a.id).subscribe({
-      next: (blob) => {
-        loading.dismiss();
-        this.download(blob, `atividade_${a.id}.pdf`);
-      },
-      error: async () => {
-        loading.dismiss();
-        await this.toast('Falha ao gerar PDF.', 'danger');
-      }
-    });
+  baixarPdf(a: AtividadeResumo) {
+    this.router.navigate(['/editor-atividade', a.id]);
   }
 
-  async baixarGabarito(a: AtividadeResumo) {
-    const loading = await this.loadingCtrl.create({ message: 'Gerando gabarito...' });
-    await loading.present();
-    this.atividadeService.exportarGabarito(a.id).subscribe({
-      next: (blob) => {
-        loading.dismiss();
-        this.download(blob, `gabarito_${a.id}.pdf`);
-      },
-      error: async () => {
-        loading.dismiss();
-        await this.toast('Falha ao gerar gabarito.', 'danger');
-      }
-    });
+  baixarGabarito(a: AtividadeResumo) {
+    this.router.navigate(['/editor-atividade', a.id], { queryParams: { tipo: 'gabarito' } });
   }
 
   private download(blob: Blob, nome: string) {

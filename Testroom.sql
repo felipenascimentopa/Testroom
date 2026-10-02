@@ -26,6 +26,7 @@ CREATE TABLE professor (
 CREATE TABLE questao (
     id BIGINT NOT NULL AUTO_INCREMENT,
     tipo_questao ENUM('UNICA_ESCOLHA', 'MULTIPLA_ESCOLHA', 'VERDADEIROFALSO') NOT NULL,
+    foto VARCHAR(500) NULL,
     enunciado VARCHAR(2000) NOT NULL,
     criado_por VARCHAR(255),
     professor_id BIGINT NOT NULL,

@@ -19,14 +19,8 @@
   <div class="perfil-container" *ngIf="!carregando || modoProprio">
 
     <div class="avatar-wrapper">
-      <ion-avatar class="perfil-avatar" (click)="modoProprio && escolherFoto()">
-        <img [src]="professor.foto || getAvatarUrl()" alt="Foto de perfil" />
-        <ion-icon
-          *ngIf="modoProprio"
-          name="camera-outline"
-          class="camera-badge">
-        </ion-icon>
-      </ion-avatar>
+      <app-image-picker #picker [compact]="true" [value]="professor.foto" (valueChange)="onFotoChange($event)">
+      </app-image-picker>
 
       <div class="nome-wrapper">
         <h2 class="perfil-nome">{{ professor.nome || 'Professor' }}</h2>
@@ -47,27 +41,16 @@
 
       <div *ngIf="editando" class="nome-edit">
         <ion-item lines="none">
-          <ion-input
-            [(ngModel)]="nomeEdit"
-            placeholder="Digite seu nome"
-            maxlength="60">
+          <ion-input [(ngModel)]="nomeEdit" placeholder="Digite seu nome" maxlength="60">
           </ion-input>
         </ion-item>
         <div class="edit-actions">
-          <ion-button
-            fill="solid"
-            color="success"
-            size="small"
-            [disabled]="carregando || !nomeEdit.trim()"
+          <ion-button fill="solid" color="success" size="small" [disabled]="carregando || !nomeEdit.trim()"
             (click)="salvarNome()">
             <ion-icon slot="start" name="checkmark-circle"></ion-icon>
             Salvar
           </ion-button>
-          <ion-button
-            fill="clear"
-            color="medium"
-            size="small"
-            (click)="editando = false">
+          <ion-button fill="clear" color="medium" size="small" (click)="editando = false">
             <ion-icon slot="start" name="close-outline"></ion-icon>
             Cancelar
           </ion-button>
@@ -91,11 +74,7 @@
           <small>ID do Professor</small>
           <p>#{{ professor.id || '—' }}</p>
         </ion-label>
-        <ion-button
-          *ngIf="modoProprio && professor.id"
-          fill="clear"
-          slot="end"
-          (click)="copiarId()">
+        <ion-button *ngIf="modoProprio && professor.id" fill="clear" slot="end" (click)="copiarId()">
           <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
         </ion-button>
       </ion-item>
@@ -126,7 +105,7 @@
     </ion-text>
 
     <div *ngIf="modoProprio" class="perfil-footer">
-      <ion-button expand="block" fill="outline" color="medium" (click)="escolherFoto()">
+      <ion-button expand="block" fill="outline" color="medium" (click)="picker.escolher()">
         <ion-icon slot="start" name="camera-outline"></ion-icon>
         Alterar foto
       </ion-button>

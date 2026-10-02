@@ -11,13 +11,14 @@ import { CategoriaModel } from '../../model/categoria.model';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { close } from 'ionicons/icons';
+import { ImagePickerComponent } from '../../components/image-picker.component';
 
 @Component({
   selector: 'app-questao-form',
   templateUrl: './questao-form.page.html',
   styleUrls: ['./questao-form.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonTextarea, IonButton, IonSelect, IonSelectOption, IonCheckbox, IonList, IonButtons, IonLoading, IonAlert, IonIcon, IonItemDivider, CommonModule, FormsModule]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonTextarea, IonButton, IonSelect, IonSelectOption, IonCheckbox, IonList, IonButtons, IonLoading, IonAlert, IonIcon, IonItemDivider, CommonModule, FormsModule, ImagePickerComponent]
 })
 export class QuestaoFormPage implements OnInit {
   questao: QuestaoModel = {
@@ -132,6 +133,7 @@ export class QuestaoFormPage implements OnInit {
     const payload = {
       tipoQuestao: this.questao.tipoQuestao,
       enunciado: this.questao.enunciado,
+      foto: this.questao.foto || null, 
       categoriaIds: this.questao.categoriaIds,
       alternativas: this.questao.alternativas
     };
