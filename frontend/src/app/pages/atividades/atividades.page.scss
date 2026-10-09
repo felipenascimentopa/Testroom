@@ -116,6 +116,10 @@
       color: var(--ion-color-primary);
     }
 
+    &.legenda-editar ion-icon {
+      color: var(--ion-color-primary, #1a2f3a);
+    }
+
     &.legenda-gabarito ion-icon {
       color: var(--ion-color-warning, #c9a84c);
     }

@@ -2,20 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
-  IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonList, IonItem,
-  IonLabel, IonButtons, IonIcon, IonAlert, IonLoading, IonBadge, IonAvatar,
-  IonNote, IonItemSliding, IonItemOptions, IonItemOption
+  IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonList,
+  IonButtons, IonIcon, IonLoading, IonAvatar, IonBadge, IonModal, IonInput, IonItem
 } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { CategoriaService } from '../../services/categoria.service';
 import { CategoriaModel } from '../../model/categoria.model';
-import { CompartilhamentoPendente } from '../../model/compartilhamento.model';
+import { CompartilhamentoPendente, CompartilhamentoCategoria } from '../../model/compartilhamento.model';
 import { AuthService } from '../../services/autenticacao.service';
 import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import {
   add, arrowBack, pencil, trash, shareSocial, checkmark, close,
-  personCircleOutline, timeOutline
+  personCircleOutline, timeOutline, closeOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -24,9 +23,8 @@ import {
   styleUrls: ['./categoria.page.scss'],
   standalone: true,
   imports: [
-    IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonList, IonItem,
-    IonLabel, IonButtons, IonIcon, IonAlert, IonLoading, IonBadge, IonAvatar,
-    IonNote, IonItemSliding, IonItemOptions, IonItemOption,
+    IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonList,
+    IonButtons, IonIcon, IonLoading, IonAvatar, IonBadge, IonModal, IonInput, IonItem,
     CommonModule, FormsModule
   ]
 })
@@ -34,6 +32,13 @@ export class CategoriaPage implements OnInit {
   categorias: CategoriaModel[] = [];
   pendentes: CompartilhamentoPendente[] = [];
   professorId: number | null = null;
+
+  // modal
+  modalAberto = false;
+  categoriaAtual: CategoriaModel | null = null;
+  compartilhamentos: CompartilhamentoCategoria[] = [];
+  novoProfessorId: number | null = null;
+  carregandoCompart = false;
 
   constructor(
     private categoriaService: CategoriaService,
@@ -45,7 +50,7 @@ export class CategoriaPage implements OnInit {
   ) {
     addIcons({
       pencil, trash, arrowBack, add, shareSocial, checkmark, close,
-      personCircleOutline, timeOutline
+      personCircleOutline, timeOutline, closeOutline
     });
   }
 
@@ -53,6 +58,10 @@ export class CategoriaPage implements OnInit {
     this.professorId = this.authService.getProfessorId();
     this.carregar();
     this.carregarPendentes();
+  }
+
+  isOwner(c: CategoriaModel): boolean {
+    return !!this.professorId && c.criadorId === this.professorId;
   }
 
   async carregar() {
@@ -71,13 +80,11 @@ export class CategoriaPage implements OnInit {
     });
   }
 
-  // --- Perfil ---
   verPerfilProfessor(id?: number) {
     if (!id) return;
     this.router.navigate(['/perfil'], { queryParams: { id } });
   }
 
-  // --- Aceite ---
   async aceitar(p: CompartilhamentoPendente) {
     const loading = await this.loadingCtrl.create({ message: 'Aceitando...' });
     await loading.present();
@@ -112,40 +119,80 @@ export class CategoriaPage implements OnInit {
     this.router.navigate(['/questoes'], { queryParams: { categoriaId } });
   }
 
-  async compartilhar(categoriaId: number, event: Event) {
+  async abrirModalCompartilhar(c: CategoriaModel, event: Event) {
     event.stopPropagation();
-    const alert = await this.alertCtrl.create({
-      header: 'Compartilhar Categoria',
-      message: 'O professor receberá um convite e precisará aceitar.',
-      inputs: [{ name: 'professorId', type: 'number', placeholder: 'ID do professor', min: 1 }],
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Enviar convite',
-          handler: (data) => {
-            const id = parseInt(data.professorId, 10);
-            if (id && id > 0) { this.confirmarCompartilhar(categoriaId, id); return true; }
-            return false;
-          }
-        }
-      ]
-    });
-    await alert.present();
+    this.categoriaAtual = c;
+    this.novoProfessorId = null;
+    this.compartilhamentos = [];
+    this.modalAberto = true;
+    await this.recarregarCompartilhamentos();
   }
 
-  async confirmarCompartilhar(categoriaId: number, professorAlvoId: number) {
+  fecharModal() {
+    this.modalAberto = false;
+    this.categoriaAtual = null;
+    this.novoProfessorId = null;
+  }
+
+  private async recarregarCompartilhamentos() {
+    if (!this.categoriaAtual?.id) return;
+    this.carregandoCompart = true;
+    this.categoriaService.listarCompartilhamentos(this.categoriaAtual.id).subscribe({
+      next: (lista) => { this.compartilhamentos = lista; this.carregandoCompart = false; },
+      error: async (err) => {
+        this.carregandoCompart = false;
+        await this.toast(err.error?.message || 'Falha ao carregar compartilhamentos.', 'danger');
+      }
+    });
+  }
+
+  async enviarConvite() {
+    if (!this.categoriaAtual?.id || !this.novoProfessorId) return;
     const loading = await this.loadingCtrl.create({ message: 'Enviando convite...' });
     await loading.present();
-    this.categoriaService.compartilhar(categoriaId, professorAlvoId).subscribe({
+    this.categoriaService.compartilhar(this.categoriaAtual.id, this.novoProfessorId).subscribe({
       next: async () => {
         loading.dismiss();
         await this.toast('Convite enviado!', 'success');
+        this.novoProfessorId = null;
+        this.recarregarCompartilhamentos();
       },
       error: async (err) => {
         loading.dismiss();
         await this.toast(err.error?.message || 'Falha ao compartilhar.', 'danger');
       }
     });
+  }
+
+  async descompartilhar(c: CompartilhamentoCategoria) {
+    if (!this.categoriaAtual?.id) return;
+    const alert = await this.alertCtrl.create({
+      header: 'Remover compartilhamento',
+      message: `Remover acesso de ${c.destinoNome}?`,
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Remover', role: 'destructive',
+          handler: async () => {
+            const loading = await this.loadingCtrl.create({ message: 'Removendo...' });
+            await loading.present();
+            this.categoriaService.descompartilhar(this.categoriaAtual!.id!, c.destinoId).subscribe({
+              next: async () => {
+                loading.dismiss();
+                await this.toast('Compartilhamento removido.', 'medium');
+                this.recarregarCompartilhamentos();
+                this.carregar();
+              },
+              error: async (err) => {
+                loading.dismiss();
+                await this.toast(err.error?.message || 'Falha ao remover.', 'danger');
+              }
+            });
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
   adicionar() { this.router.navigate(['/categoria-form']); }
@@ -173,7 +220,10 @@ export class CategoriaPage implements OnInit {
     await loading.present();
     this.categoriaService.excluir(id).subscribe({
       next: () => { loading.dismiss(); this.carregar(); },
-      error: async () => { loading.dismiss(); await this.toast('Falha ao excluir.', 'danger'); }
+      error: async (err) => {
+        loading.dismiss();
+        await this.toast(err.error?.message || 'Falha ao excluir.', 'danger');
+      }
     });
   }
 

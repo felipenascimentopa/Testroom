@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { CategoriaModel } from '../model/categoria.model';
 import { AuthService } from './autenticacao.service';
 import { environment } from '../../environments/environment';
-import { CompartilhamentoPendente } from '../model/compartilhamento.model';
+import { CompartilhamentoPendente, CompartilhamentoCategoria } from '../model/compartilhamento.model';
 
 @Injectable({ providedIn: 'root' })
 export class CategoriaService {
@@ -44,7 +44,9 @@ export class CategoriaService {
 
     descompartilhar(categoriaId: number, professorAlvoId: number): Observable<void> {
         const professorOrigemId = this.getProfessorId();
-        return this.http.delete<void>(`${this.apiUrl}/${categoriaId}/compartilhar/${professorAlvoId}?professorOrigemId=${professorOrigemId}`);
+        return this.http.delete<void>(
+            `${this.apiUrl}/${categoriaId}/compartilhar/${professorAlvoId}?professorOrigemId=${professorOrigemId}`
+        );
     }
 
     listarPendentes(): Observable<CompartilhamentoPendente[]> {
@@ -70,5 +72,11 @@ export class CategoriaService {
         return this.http.post<void>(
             `${this.apiUrl}/${categoriaId}/compartilhar?professorId=${professorId}&professorAlvoId=${professorAlvoId}`,
             {});
+    }
+
+    listarCompartilhamentos(categoriaId: number): Observable<CompartilhamentoCategoria[]> {
+        const professorId = this.getProfessorId();
+        return this.http.get<CompartilhamentoCategoria[]>(
+            `${this.apiUrl}/${categoriaId}/compartilhamentos?professorId=${professorId}`);
     }
 }

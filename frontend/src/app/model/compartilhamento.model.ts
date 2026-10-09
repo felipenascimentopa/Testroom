@@ -9,3 +9,15 @@ export interface CompartilhamentoPendente {
     origemFoto?: string;
     dataCompartilhamento: string;
 }
+
+export interface CompartilhamentoCategoria {
+    id: number;
+    categoriaId: number;
+    origemId: number;
+    origemNome: string;
+    destinoId: number;
+    destinoNome: string;
+    destinoFoto?: string;
+    status: 'PENDENTE' | 'ACEITO' | 'RECUSADO';
+    dataCompartilhamento: string;
+}
