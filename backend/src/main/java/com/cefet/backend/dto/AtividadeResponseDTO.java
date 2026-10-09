@@ -3,6 +3,7 @@ package com.cefet.backend.dto;
 import com.cefet.backend.entity.Alternativa;
 import com.cefet.backend.entity.Atividade;
 import com.cefet.backend.entity.QuestaoAtividade;
+import com.cefet.backend.entity.TipoQuestao;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -56,6 +57,7 @@ public class AtividadeResponseDTO {
     public static class QuestaoAtividadeDTO {
         private Long questaoAtividadeId;
         private Long questaoId;
+        private TipoQuestao tipoQuestao;
         private String foto;
         private String enunciado;
         private Integer posicao;
@@ -65,6 +67,7 @@ public class AtividadeResponseDTO {
         public QuestaoAtividadeDTO(QuestaoAtividade qa) {
             this.questaoAtividadeId = qa.getId();
             this.questaoId = qa.getQuestao().getId();
+            this.tipoQuestao = qa.getQuestao().getTipoQuestao();
             this.foto = qa.getQuestao().getFoto();
             this.enunciado = qa.getQuestao().getEnunciado();
             this.posicao = qa.getPosicao();

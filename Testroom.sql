@@ -11,7 +11,7 @@ CREATE TABLE usuario (
     email  VARCHAR(255) NOT NULL,
     senha  VARCHAR(255) NOT NULL,
     CONSTRAINT usuario_cargo_check
-        CHECK (cargo IN ('PROFESSOR', 'ESTUDANTE')),
+        CHECK (cargo IN ('PROFESSOR')),
     CONSTRAINT uk_usuario_email UNIQUE (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -23,7 +23,7 @@ CREATE TABLE professor (
     descricao      VARCHAR(255),
     especialidade  VARCHAR(255),
     foto           TEXT,
-    nome           VARCHAR(255) NOT NULL,
+    nome           MEDIUMTEXT,
     usuario_id     BIGINT NOT NULL,
     CONSTRAINT uk_professor_usuario UNIQUE (usuario_id),
     CONSTRAINT fk_professor_usuario
@@ -39,7 +39,7 @@ CREATE TABLE questao (
     enunciado      VARCHAR(2000) NOT NULL,
     tipo_questao   VARCHAR(255) NOT NULL,
     professor_id   BIGINT NOT NULL,
-    foto           VARCHAR(500),
+    foto           MEDIUMTEXT,
     CONSTRAINT questao_tipo_questao_check
         CHECK (tipo_questao IN ('UNICA_ESCOLHA','MULTIPLA_ESCOLHA','VERDADEIROFALSO')),
     CONSTRAINT fk_questao_professor
@@ -145,12 +145,14 @@ CREATE INDEX idx_atividade_professor ON atividade(professor_id);
 -- questao_atividade
 -- ============================================================
 CREATE TABLE questao_atividade (
-    id                  BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    posicao_questao     INT NOT NULL,
-    valor_pontos        DECIMAL(5,2) NOT NULL,
-    questao_id          BIGINT NOT NULL,
-    atividade_id        BIGINT NOT NULL,
-    ordem_alternativas  VARCHAR(500),
+    id                          BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    posicao_questao             INT NOT NULL,
+    valor_pontos                DECIMAL(5,2) NOT NULL,
+    questao_id                  BIGINT NOT NULL,
+    atividade_id                BIGINT NOT NULL,
+    ordem_alternativas          VARCHAR(500),
+    enunciado_html              TEXT,
+    alternativas_editadas_json  TEXT,
     CONSTRAINT fk_questao_atividade_questao
         FOREIGN KEY (questao_id)   REFERENCES questao(id)   ON DELETE CASCADE,
     CONSTRAINT fk_questao_atividade_atividade
@@ -159,6 +161,3 @@ CREATE TABLE questao_atividade (
 
 CREATE INDEX idx_questao_atividade_atividade ON questao_atividade(atividade_id);
 CREATE INDEX idx_questao_atividade_questao   ON questao_atividade(questao_id);
-
-ALTER TABLE questao   MODIFY COLUMN foto MEDIUMTEXT;
-ALTER TABLE professor MODIFY COLUMN foto MEDIUMTEXT;

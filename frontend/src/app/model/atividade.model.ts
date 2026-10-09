@@ -22,6 +22,7 @@ export interface AtividadeResponse {
 
 export interface QuestaoAtividade {
     questaoId: number;
+    tipoQuestao?: 'UNICA_ESCOLHA' | 'MULTIPLA_ESCOLHA' | 'VERDADEIROFALSO';
     foto?: string;
     enunciado: string;
     posicao: number;

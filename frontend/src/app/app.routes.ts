@@ -36,10 +36,6 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/perfil/perfil.page').then(m => m.PerfilPage)
   },
   {
-    path: 'perfil',
-    loadComponent: () => import('./pages/perfil/perfil.page').then(m => m.PerfilPage)
-  },
-  {
     path: 'gerar-atividade',
     loadComponent: () => import('./pages/gerar-atividade/gerar-atividade.page').then(m => m.GerarAtividadePage)
   },

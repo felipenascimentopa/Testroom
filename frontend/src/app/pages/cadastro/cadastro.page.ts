@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton, IonSelect, IonSelectOption, IonLoading, IonButtons, IonIcon } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton, IonLoading, IonButtons, IonIcon } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { UsuarioService } from '../../services/usuario.service';
 import { AlertController, LoadingController } from '@ionic/angular';
@@ -13,7 +13,7 @@ import { arrowBack } from 'ionicons/icons';
   templateUrl: './cadastro.page.html',
   styleUrls: ['./cadastro.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton, IonSelect, IonSelectOption, IonLoading, IonButtons, IonIcon, CommonModule, FormsModule]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonLabel, IonInput, IonButton, IonLoading, IonButtons, IonIcon, CommonModule, FormsModule]
 })
 export class CadastroPage {
   usuario = { email: '', senha: '', cargo: 'PROFESSOR' };

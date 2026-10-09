@@ -5,6 +5,10 @@
     </ion-buttons>
     <ion-title>Editor</ion-title>
     <ion-buttons slot="end">
+      <ion-button (click)="regenerar()" title="Recriar o conteúdo a partir das questões">
+        <ion-icon slot="start" name="refresh-outline"></ion-icon>
+        Regenerar
+      </ion-button>
       <ion-button (click)="alternarTipo()"
                   [color]="tipo === 'gabarito' ? 'warning' : 'medium'"
                   [title]="tipo === 'gabarito' ? 'Voltar para prova' : 'Ver gabarito'">
@@ -132,13 +136,24 @@
   <ion-toolbar class="toolbar img-tools" *ngIf="imagemSelecionada">
     <span class="it-label">
       <ion-icon name="image-outline"></ion-icon>
-      Tamanho da imagem:
+      Imagem: <strong>{{ larguraPct }}%</strong> da largura
     </span>
     <button type="button" class="tb-btn" (click)="redimensionarImagem(25)">25%</button>
     <button type="button" class="tb-btn" (click)="redimensionarImagem(50)">50%</button>
     <button type="button" class="tb-btn" (click)="redimensionarImagem(75)">75%</button>
     <button type="button" class="tb-btn" (click)="redimensionarImagem(100)">100%</button>
     <span class="sep"></span>
+    <button type="button" class="tb-btn" title="Alinhar à esquerda" (click)="alinharImagem('left')">
+      <ion-icon name="reorder-two-outline"></ion-icon>
+    </button>
+    <button type="button" class="tb-btn" title="Centralizar" (click)="alinharImagem('center')">
+      <ion-icon name="reorder-three-outline"></ion-icon>
+    </button>
+    <button type="button" class="tb-btn" title="Alinhar à direita" (click)="alinharImagem('right')">
+      <ion-icon name="reorder-four-outline"></ion-icon>
+    </button>
+    <span class="sep"></span>
+    <span class="it-dica">Arraste a alça no canto da imagem para ajustar</span>
     <button type="button" class="tb-btn danger" (click)="removerImagemSelecionada()">
       <ion-icon name="trash-outline"></ion-icon>
       Remover
@@ -147,13 +162,28 @@
 </ion-header>
 
 <ion-content>
-  <div class="workspace">
+  <div #workspace class="workspace">
     <div #editor
          class="pagina"
          [class.gabarito]="tipo === 'gabarito'"
          contenteditable="true"
          spellcheck="false"
+         (input)="aoEditar()"
          (click)="onEditorClick($event)"></div>
+
+    <div class="img-frame" *ngIf="imagemSelecionada"
+         [style.left.px]="frame.left"
+         [style.top.px]="frame.top"
+         [style.width.px]="frame.width"
+         [style.height.px]="frame.height">
+      <span class="img-badge">{{ larguraPct }}%</span>
+      <div class="img-handle"
+           title="Arraste para redimensionar"
+           (pointerdown)="iniciarResize($event)"
+           (pointermove)="moverResize($event)"
+           (pointerup)="finalizarResize($event)"
+           (pointercancel)="finalizarResize($event)"></div>
+    </div>
   </div>
 
   <ion-toast

@@ -20,13 +20,6 @@
       <ion-label position="floating">Senha</ion-label>
       <ion-input type="password" [(ngModel)]="usuario.senha" required></ion-input>
     </ion-item>
-    <ion-item>
-      <ion-label>Cargo</ion-label>
-      <ion-select [(ngModel)]="usuario.cargo" interface="popover">
-        <ion-select-option value="PROFESSOR">Professor</ion-select-option>
-        <ion-select-option value="ESTUDANTE">Estudante</ion-select-option>
-      </ion-select>
-    </ion-item>
     <ion-button expand="block" (click)="cadastrar()" [disabled]="!usuario.email || !usuario.senha">Cadastrar</ion-button>
   </div>
 </ion-content>
