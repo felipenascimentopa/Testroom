@@ -37,15 +37,12 @@
     </div>
   </div>
 
-<ion-content class="ion-padding">
   <div *ngIf="grupos.length === 0" class="vazio">
     <p>Nenhuma atividade criada ainda.</p>
     <p class="dica">Toque em <strong>+</strong> para criar a primeira.</p>
   </div>
 
-  <div *ngFor="let g of grupos"
-       class="grupo-card"
-       [id]="'grupo-' + (g.grupoId || ('single-' + g.versoes[0].id))">
+  <div *ngFor="let g of grupos" class="grupo-card" [id]="'grupo-' + (g.grupoId || ('single-' + g.versoes[0].id))">
 
     <div class="grupo-header">
       <div>
@@ -69,6 +66,9 @@
         </span>
       </div>
       <div class="versao-actions">
+        <ion-button fill="clear" color="primary" (click)="abrirEditorWord(v)" title="Editar no editor Word">
+          <ion-icon name="create-outline"></ion-icon>
+        </ion-button>
         <ion-button fill="clear" (click)="visualizar(v)" title="Visualizar">
           <ion-icon name="eye-outline"></ion-icon>
         </ion-button>

@@ -37,6 +37,9 @@ public class QuestaoAtividade {
     @Column(name = "ordem_alternativas", length = 500)
     private String ordemAlternativas;
 
-    @Column(name = "quebra_pagina_antes")
-    private Boolean quebraPaginaAntes = false;
+    @Column(name = "enunciado_html", columnDefinition = "TEXT")
+    private String enunciadoHtml;
+
+    @Column(name = "alternativas_editadas_json", columnDefinition = "TEXT")
+    private String alternativasEditadasJson;
 }

@@ -6,7 +6,6 @@ import { APP_INITIALIZER } from '@angular/core';
 
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
-import { AcessibilidadeService } from './app/services/acessibilidade.service';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -14,11 +13,6 @@ bootstrapApplication(AppComponent, {
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideHttpClient(),
-    {
-      provide: APP_INITIALIZER,
-      useFactory: (a11y: AcessibilidadeService) => () => a11y.carregar(),
-      deps: [AcessibilidadeService],
-      multi: true
-    }
+    
   ],
 });

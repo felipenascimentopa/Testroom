@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { PdfConfigPage } from './pdf-config.page';
+import { EditorWordPage } from './editor-word.page';
 
-describe('PdfConfigPage', () => {
-  let component: PdfConfigPage;
-  let fixture: ComponentFixture<PdfConfigPage>;
+describe('EditorWordPage', () => {
+  let component: EditorWordPage;
+  let fixture: ComponentFixture<EditorWordPage>;
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PdfConfigPage);
+    fixture = TestBed.createComponent(EditorWordPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

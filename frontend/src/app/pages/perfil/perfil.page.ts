@@ -230,8 +230,7 @@ export class PerfilPage implements OnInit {
 
   onFotoChange(base64: string | null) {
     this.professor.foto = base64;
-    if (!base64) return;
-    this.professorService.atualizarFoto(this.professor.id, base64).subscribe({
+    this.professorService.atualizarFoto(this.professor.id, base64 ?? '').subscribe({
       next: (res) => {
         this.professor.foto = res.foto;
         const usuario = this.authService.getUsuario();

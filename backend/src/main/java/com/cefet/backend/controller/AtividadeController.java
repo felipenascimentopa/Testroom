@@ -1,18 +1,13 @@
 package com.cefet.backend.controller;
 
 import com.cefet.backend.dto.AtividadeComQuestoesRequestDTO;
-import com.cefet.backend.dto.AtividadeLayoutDTO;
-import com.cefet.backend.dto.AtividadeRequestDTO;
 import com.cefet.backend.dto.AtividadeResponseDTO;
 import com.cefet.backend.dto.AtividadeResumoDTO;
-import com.cefet.backend.dto.PdfOptionsDTO;
 import com.cefet.backend.entity.Atividade;
 import com.cefet.backend.service.AtividadeService;
-import com.cefet.backend.service.PdfService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import com.cefet.backend.dto.PdfOptionsDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -34,20 +29,7 @@ public class AtividadeController {
     private AtividadeService atividadeService;
 
     @Autowired
-    private PdfService pdfService;
-
-    @GetMapping("/{id}/pdf")
-    @Operation(summary = "Exportar atividade para PDF")
-    public ResponseEntity<byte[]> exportarPdf(
-            @PathVariable Long id,
-            @ModelAttribute PdfOptionsDTO options) throws IOException {
-        Atividade atividade = atividadeService.buscarPorId(id);
-        byte[] pdf = pdfService.gerarPdfAtividade(atividade, options);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "atividade_" + id + ".pdf");
-        return ResponseEntity.ok().headers(headers).body(pdf);
-    }
+    private com.cefet.backend.service.HtmlPdfService htmlPdfService;
 
     @GetMapping("/{id}")
     @Operation(summary = "Buscar atividade por ID")
@@ -66,32 +48,10 @@ public class AtividadeController {
                 .body(versoes.stream().map(AtividadeResponseDTO::new).collect(Collectors.toList()));
     }
 
-    @GetMapping("/{id}/gabarito")
-    @Operation(summary = "Exportar gabarito da atividade para PDF")
-    public ResponseEntity<byte[]> exportarGabarito(
-            @PathVariable Long id,
-            @ModelAttribute PdfOptionsDTO options) throws IOException {
-        Atividade atividade = atividadeService.buscarPorId(id);
-        byte[] pdf = pdfService.gerarGabarito(atividade, options);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "gabarito_" + id + ".pdf");
-        return ResponseEntity.ok().headers(headers).body(pdf);
-    }
-
     @GetMapping
     @Operation(summary = "Listar atividades de um professor")
     public ResponseEntity<List<AtividadeResumoDTO>> listar(@RequestParam Long professorId) {
         return ResponseEntity.ok(atividadeService.listarPorProfessor(professorId));
-    }
-
-    @PutMapping("/{id}/layout")
-    @Operation(summary = "Salvar layout do PDF (ordem, quebras, opções visuais)")
-    public ResponseEntity<Void> salvarLayout(
-            @PathVariable Long id,
-            @RequestBody AtividadeLayoutDTO dto) {
-        atividadeService.salvarLayout(id, dto);
-        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
@@ -99,5 +59,36 @@ public class AtividadeController {
     public ResponseEntity<Void> excluir(@PathVariable Long id) {
         atividadeService.excluir(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/html")
+    @Operation(summary = "Obter HTML (editor tipo Word) da atividade")
+    public ResponseEntity<com.cefet.backend.dto.AtividadeHtmlDTO> obterHtml(@PathVariable Long id) {
+        String html = atividadeService.buscarHtml(id);
+        return ResponseEntity.ok(new com.cefet.backend.dto.AtividadeHtmlDTO(html));
+    }
+
+    @PutMapping("/{id}/html")
+    @Operation(summary = "Salvar HTML (editor tipo Word) da atividade")
+    public ResponseEntity<Void> salvarHtml(
+            @PathVariable Long id,
+            @RequestBody com.cefet.backend.dto.AtividadeHtmlDTO dto) {
+        atividadeService.salvarHtml(id, dto.getHtml());
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/pdf-html")
+    @Operation(summary = "Gerar PDF do HTML salvo (editor tipo Word)")
+    public ResponseEntity<byte[]> pdfHtml(
+            @PathVariable Long id,
+            @RequestParam(name = "tipo", defaultValue = "prova") String tipo) throws IOException {
+        boolean gabarito = "gabarito".equalsIgnoreCase(tipo);
+        String html = atividadeService.buscarHtml(id);
+        byte[] pdf = htmlPdfService.renderizar(html, gabarito);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        String nome = (gabarito ? "gabarito_" : "atividade_") + id + ".pdf";
+        headers.setContentDispositionFormData("inline", nome);
+        return ResponseEntity.ok().headers(headers).body(pdf);
     }
 }

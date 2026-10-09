@@ -8,10 +8,10 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { AtividadeService } from '../../services/atividade.service';
 import { AtividadeResumo } from '../../model/atividade.model';
-import { AlertController, LoadingController, ToastController } from '@ionic/angular';
+import { AlertController, LoadingController, ToastController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
-  arrowBack, downloadOutline, keyOutline, trashOutline, eyeOutline, add
+  arrowBack, downloadOutline, keyOutline, trashOutline, eyeOutline, add, createOutline
 } from 'ionicons/icons';
 
 interface GrupoAtividade {
@@ -42,7 +42,7 @@ export class AtividadesPage implements OnInit {
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController
   ) {
-    addIcons({ arrowBack, downloadOutline, keyOutline, trashOutline, eyeOutline, add });
+    addIcons({ arrowBack, downloadOutline, keyOutline, trashOutline, eyeOutline, add, createOutline });
   }
 
   ngOnInit() {
@@ -110,21 +110,16 @@ export class AtividadesPage implements OnInit {
     this.router.navigate(['/visualizar-atividade', a.id]);
   }
 
+  abrirEditorWord(a: AtividadeResumo) {
+    this.router.navigate(['/editor-word', a.id]);
+  }
+
   baixarPdf(a: AtividadeResumo) {
-    this.router.navigate(['/editor-atividade', a.id]);
+    this.abrirEditorWord(a);
   }
 
   baixarGabarito(a: AtividadeResumo) {
-    this.router.navigate(['/editor-atividade', a.id], { queryParams: { tipo: 'gabarito' } });
-  }
-
-  private download(blob: Blob, nome: string) {
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = nome;
-    a.click();
-    window.URL.revokeObjectURL(url);
+    this.router.navigate(['/editor-word', a.id], { queryParams: { tipo: 'gabarito' } });
   }
 
   async excluirGrupo(g: GrupoAtividade) {

@@ -28,6 +28,8 @@ public class AtividadeResponseDTO {
     private String professorNome;
     private LocalDateTime dataGeracao;
     private List<QuestaoAtividadeDTO> questoes;
+    private String grupoId;
+    private Integer quantidadeVersoes;
 
     public AtividadeResponseDTO(Atividade atividade) {
         this.id = atividade.getId();
@@ -38,6 +40,8 @@ public class AtividadeResponseDTO {
         this.professorId = atividade.getProfessor().getId();
         this.professorNome = atividade.getProfessor().getNome();
         this.dataGeracao = atividade.getDataGeracao();
+        this.grupoId = atividade.getGrupoId();
+        this.quantidadeVersoes = atividade.getQuantidadeVersoes();
         if (atividade.getQuestoes() != null) {
             this.questoes = atividade.getQuestoes().stream()
                     .sorted(Comparator.comparing(QuestaoAtividade::getPosicao))
@@ -50,20 +54,20 @@ public class AtividadeResponseDTO {
     @Setter
     @NoArgsConstructor
     public static class QuestaoAtividadeDTO {
+        private Long questaoAtividadeId;
         private Long questaoId;
         private String foto;
         private String enunciado;
         private Integer posicao;
         private BigDecimal valorPontos;
-        private Boolean quebraPaginaAntes;
         private List<AlternativaDTO> alternativas;
 
         public QuestaoAtividadeDTO(QuestaoAtividade qa) {
+            this.questaoAtividadeId = qa.getId();
             this.questaoId = qa.getQuestao().getId();
             this.foto = qa.getQuestao().getFoto();
             this.enunciado = qa.getQuestao().getEnunciado();
             this.posicao = qa.getPosicao();
-            this.quebraPaginaAntes = qa.getQuebraPaginaAntes();
             this.valorPontos = qa.getValorPontos();
 
             if (qa.getQuestao().getAlternativas() != null) {

@@ -1,4 +1,3 @@
-/** Abre o seletor de arquivo e devolve o arquivo escolhido. */
 export function pickImageFile(): Promise<File | null> {
   return new Promise((resolve) => {
     const input = document.createElement('input');
@@ -9,11 +8,6 @@ export function pickImageFile(): Promise<File | null> {
   });
 }
 
-/**
- * Lê o arquivo, redimensiona para caber em `maxSize` (maior lado)
- * e devolve como data URL base64 (JPEG).
- * Reduzir evita estourar o banco.
- */
 export function fileToBase64Resized(
   file: File,
   maxSize = 900,
@@ -37,7 +31,10 @@ export function fileToBase64Resized(
         const canvas = document.createElement('canvas');
         canvas.width = width;
         canvas.height = height;
-        canvas.getContext('2d')!.drawImage(img, 0, 0, width, height);
+        const ctx = canvas.getContext('2d')!;
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
         resolve(canvas.toDataURL('image/jpeg', quality));
       };
       img.src = reader.result as string;
@@ -46,7 +43,6 @@ export function fileToBase64Resized(
   });
 }
 
-/** Diz se o valor é uma imagem já armazenada (base64) ou uma URL http(s). */
 export function isImageDataUrl(v?: string | null): boolean {
   return !!v && v.startsWith('data:image/');
 }

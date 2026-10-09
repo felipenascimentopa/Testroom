@@ -26,13 +26,13 @@ public class Atividade {
     @Column(nullable = false, length = 255)
     private String titulo;
 
-    @Column(length = 500)
+    @Column(length = 2000)
     private String descricao;
 
     @Column(length = 2000)
     private String instrucoes;
 
-    @Column(name = "valor_pontos", nullable = false, precision = 3, scale = 2)
+    @Column(name = "valor_pontos", nullable = false, precision = 7, scale = 2)
     private BigDecimal valorPontos;
 
     @ManyToOne
@@ -48,8 +48,8 @@ public class Atividade {
     @Column(name = "grupo_id", length = 36)
     private String grupoId;
 
-    @Column(name = "pdf_options_json", columnDefinition = "TEXT")
-    private String pdfOptionsJson;
+    @Column(name = "conteudo_html", columnDefinition = "TEXT")
+    private String conteudoHtml;
 
     @OneToMany(mappedBy = "atividade", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<QuestaoAtividade> questoes = new ArrayList<>();

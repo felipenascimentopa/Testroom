@@ -83,7 +83,7 @@ public class AtividadeService {
 
     private List<Questao> buscarQuestoesPorFiltros(AtividadeRequestDTO dto) {
         if (dto.getCategoriaIds() != null && !dto.getCategoriaIds().isEmpty()) {
-            return questaoRepository.findByCategoriasIdIn(dto.getCategoriaIds());
+            return questaoRepository.findDistinctByCategoriasIdIn(dto.getCategoriaIds());
         }
         return questaoRepository.findAll();
     }
@@ -123,7 +123,7 @@ public class AtividadeService {
         String grupoId = UUID.randomUUID().toString();
 
         int qtdVersoes = dto.getQuantidadeVersoes() != null && dto.getQuantidadeVersoes() > 0
-                ? dto.getQuantidadeVersoes()
+                ? Math.min(dto.getQuantidadeVersoes(), 20)
                 : 1;
 
         List<Atividade> versoes = new ArrayList<>();
@@ -204,27 +204,18 @@ public class AtividadeService {
         atividadeRepository.deleteById(id);
     }
 
-    @Transactional
-    public void salvarLayout(Long atividadeId, com.cefet.backend.dto.AtividadeLayoutDTO dto) {
-        Atividade a = atividadeRepository.findById(atividadeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Atividade não encontrada"));
+    @Transactional(readOnly = true)
+    public String buscarHtml(Long id) {
+        Atividade a = atividadeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Atividade não encontrada. Id: " + id));
+        return a.getConteudoHtml();
+    }
 
-        if (dto.getOrdem() != null) {
-            for (var item : dto.getOrdem()) {
-                questaoAtividadeRepository.findById(item.getQuestaoAtividadeId()).ifPresent(qa -> {
-                    if (!qa.getAtividade().getId().equals(atividadeId))
-                        return;
-                    qa.setPosicao(item.getPosicao());
-                    if (item.getQuebraPaginaAntes() != null) {
-                        qa.setQuebraPaginaAntes(item.getQuebraPaginaAntes());
-                    }
-                    questaoAtividadeRepository.save(qa);
-                });
-            }
-        }
-        if (dto.getPdfOptionsJson() != null) {
-            a.setPdfOptionsJson(dto.getPdfOptionsJson());
-            atividadeRepository.save(a);
-        }
+    @Transactional
+    public void salvarHtml(Long id, String html) {
+        Atividade a = atividadeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Atividade não encontrada. Id: " + id));
+        a.setConteudoHtml(html);
+        atividadeRepository.save(a);
     }
 }

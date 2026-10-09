@@ -154,6 +154,8 @@ export class GerarAtividadePage implements OnInit {
       return;
     }
 
+    this.sanitizarVersoes();
+
     const payload: AtividadeComQuestoesRequest = {
       titulo: this.atividade.titulo,
       descricao: this.atividade.descricao,
@@ -183,6 +185,13 @@ export class GerarAtividadePage implements OnInit {
         await alert.present();
       }
     });
+  }
+
+  sanitizarVersoes() {
+    let v = Number(this.atividade.quantidadeVersoes) || 1;
+    if (v < 1) v = 1;
+    if (v > 20) v = 20;
+    this.atividade.quantidadeVersoes = v;
   }
 
   private async aviso(mensagem: string) {

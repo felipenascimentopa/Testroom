@@ -56,19 +56,12 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/acessibilidade/acessibilidade.page').then(m => m.AcessibilidadePage)
   },
   {
-    path: 'pdf-config',
-    loadComponent: () => import('./pages/pdf-config/pdf-config.page').then(m => m.PdfConfigPage)
+    path: 'editor-word',
+    loadComponent: () => import('./pages/editor-word/editor-word.page').then(m => m.EditorWordPage)
   },
   {
-    path: 'pdf-config/:id',
-    loadComponent: () => import('./pages/pdf-config/pdf-config.page').then(m => m.PdfConfigPage)
+    path: 'editor-word/:id',
+    loadComponent: () => import('./pages/editor-word/editor-word.page').then(m => m.EditorWordPage)
   },
-  {
-    path: 'editor-atividade/:id',
-    loadComponent: () => import('./pages/editor-atividade/editor-atividade.page').then(m => m.EditorAtividadePage)
-  },
-  {
-    path: 'editor-atividade',
-    loadComponent: () => import('./pages/editor-atividade/editor-atividade.page').then( m => m.EditorAtividadePage)
-  },
+
 ];

@@ -78,8 +78,9 @@
   </div>
 
   <ion-item>
-    <ion-label position="floating">Quantidade de versões</ion-label>
-    <ion-input type="number" [(ngModel)]="atividade.quantidadeVersoes" min="1" max="10">
+    <ion-label position="floating">Quantidade de versões (1 a 20)</ion-label>
+    <ion-input type="number" [(ngModel)]="atividade.quantidadeVersoes" (ionChange)="sanitizarVersoes()"
+      (ngModelChange)="sanitizarVersoes()" min="1" max="20" step="1">
     </ion-input>
   </ion-item>
 

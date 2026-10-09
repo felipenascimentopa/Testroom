@@ -78,11 +78,11 @@ export class VisualizarAtividadePage implements OnInit {
   }
 
   baixarPdf() {
-    this.router.navigate(['/pdf-config', this.atividadeId], { queryParams: { tipo: 'prova' } });
+    this.router.navigate(['/editor-word', this.atividadeId]);
   }
 
   baixarGabarito() {
-    this.router.navigate(['/pdf-config', this.atividadeId], { queryParams: { tipo: 'gabarito' } });
+    this.router.navigate(['/editor-word', this.atividadeId], { queryParams: { tipo: 'gabarito' } });
   }
 
   voltar() {

@@ -149,8 +149,9 @@
     margin-top: 12px;
     font-weight: 300;
   }
+}
 
-  .perfil-content {
+.perfil-content {
   --background: var(--ion-background-color);
 }
 
@@ -162,7 +163,10 @@
   padding: 60px 0;
   color: var(--ion-color-medium);
 
-  p { margin-top: 12px; font-size: 0.9rem; }
+  p {
+    margin-top: 12px;
+    font-size: 0.9rem;
+  }
 }
 
 .perfil-container {
@@ -219,7 +223,9 @@
       gap: 4px;
       font-size: 0.78rem;
 
-      ion-icon { font-size: 0.9rem; }
+      ion-icon {
+        font-size: 0.9rem;
+      }
     }
   }
 }
@@ -242,7 +248,9 @@
       --padding-start: 0;
       border-bottom: 1px solid var(--ion-border-color);
 
-      &:focus-within { border-bottom-color: var(--ion-color-secondary); }
+      &:focus-within {
+        border-bottom-color: var(--ion-color-secondary);
+      }
     }
 
     .edit-actions {
@@ -266,7 +274,9 @@
     --inner-padding-end: 12px;
     border-bottom: 1px solid var(--ion-border-color);
 
-    &:last-child { border-bottom: none; }
+    &:last-child {
+      border-bottom: none;
+    }
 
     small {
       display: block;
@@ -299,5 +309,4 @@
 
 .perfil-footer {
   margin-top: 24px;
-}
 }
