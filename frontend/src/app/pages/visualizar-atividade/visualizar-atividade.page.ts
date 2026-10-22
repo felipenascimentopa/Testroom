@@ -86,6 +86,6 @@ export class VisualizarAtividadePage implements OnInit {
   }
 
   voltar() {
-    this.router.navigate(['/menu']);
+    this.router.navigate(['/atividades']);
   }
 }
